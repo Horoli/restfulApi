@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "-": "^0.0.1",
+    "fastify": "^4.10.2",
+    "save-dev": "^0.0.1-security"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "name": "restful_api",
+  "version": "1.0.0",
+  "description": "restful api",
+  "main": "server.js",
+  "type": "module",
+  "author": "",
+  "license": "ISC"
+}
