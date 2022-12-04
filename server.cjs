@@ -5,7 +5,7 @@ const fastify = require('fastify');
 const fs = require('fs');
 
 const server = fastify({
-    logger: true
+    logger: true,
 });
 
 
@@ -101,4 +101,4 @@ server.all('/allRoute', async (req, res) => {
 // server.register(user, { prefix: '/user' });
 
 // server.listen(3000);
-server.listen(3000, "0.0.0.0");
+server.listen(3000, "1.1.1.1");
