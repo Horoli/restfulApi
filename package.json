@@ -10,8 +10,7 @@
   "name": "restful_api",
   "version": "1.0.0",
   "description": "restful api",
-  "main": "server.js",
-  "type": "module",
-  "author": "",
-  "license": "ISC"
+  "main": "app.js",
+  "author": "horoli (sunha321@gmail.com)",
+  "license": "MIT"
 }
