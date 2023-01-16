@@ -44,6 +44,8 @@ class WebServer {
             for (const middlewareName of middlewares) {
               if (middlewareName in this.$middlewares) {
                 const middleware = this.$middlewares[middlewareName];
+
+                // console.log(middleware);
                 const middlewareResult = await middleware(req, rep);
                 if (middlewareResult instanceof Error) {
                   return done(middlewareResult);
