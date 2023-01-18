@@ -9,14 +9,15 @@ module.exports = {
       const joinUser = Database.sharedInstance().getCollection("users");
 
       // DB 접근해서 set함수 실행해서 저장
-      joinUser.set("id", id);
-      joinUser.set("pw", pw);
+      joinUser.set("users", [{ id: id, pw: pw }]);
 
-      console.log(joinUser);
+      for (obj in joinUser.get("users")) {
+        console.log(obj);
+      }
 
       return {
         statusCode: 200,
-        data: {},
+        data: "join successed",
       };
     },
   },
@@ -32,16 +33,17 @@ module.exports = {
       const userInfo = Database.sharedInstance().getCollection("users");
 
       console.log(`step 2 : ${userInfo.$dataset}`);
-      console.log(`step 3 : ${userInfo.get(id)}`);
+      console.log(`step 3333 : ${userInfo.get("user")}`);
 
       // TODO : 불일치 시 에러 발생 후 리턴
       if (pw !== "ddddd") {
+        userInfo.set("tokens", "");
         const error = new Error("invalid password");
         error.status = 400;
         return error;
       }
       const token = Crypto.randomUUID().replace(/-/g, "");
-      userInfo.set("tokens", {});
+      userInfo.set("tokens", token);
 
       // TODO : 토큰, 및 유저 정보 DB에 입력
 

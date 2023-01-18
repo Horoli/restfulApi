@@ -6,11 +6,11 @@ class Collection {
   }
 
   get(key) {
-    const dbJson = Fs.readFileSync("db.json");
-    console.log(`dbJson ${dbJson}`);
-    return dbJson[key];
-
-    // return this.$dataset[key];
+    console.log(key);
+    this.$dataset = Fs.readFileSync("db.json");
+    console.log(this.$dataset);
+    console.log(JSON.parse(this.$dataset));
+    return JSON.parse(this.$dataset)[key];
   }
 
   set(key, value) {
@@ -22,12 +22,7 @@ class Collection {
 
 class Database {
   constructor() {
-    this.$db = {
-      // users: "ddddd",
-      // ex)
-      // "collectionName" : {
-      // }
-    };
+    this.$db = {};
   }
 
   getCollection(collectionName) {
@@ -40,7 +35,6 @@ class Database {
     }
 
     console.log(`step 4 : ${this.$db[collectionName]}`);
-    console.log(`step 5 : ${this.$db.$dataset}`);
 
     // 있으면 그냥 return
     return this.$db[collectionName];
