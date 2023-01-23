@@ -7,10 +7,10 @@ class WebServer {
   constructor(opts = {}) {
     this.$opts = opts;
     this.$webServer = Fastify();
-
     this.$middlewares = {};
-    this.$_initRoutes();
+
     this.$_initMiddlewares();
+    this.$_initRoutes();
   }
 
   $_initMiddlewares() {
@@ -39,13 +39,12 @@ class WebServer {
         // TODO : preHandler 추가
         const options = {
           preHandler: async (req, rep, done) => {
-            const middlewares = routeDef.middleware ?? [];
+            const middlewares = routeDef.middlewares ?? [];
 
             for (const middlewareName of middlewares) {
               if (middlewareName in this.$middlewares) {
                 const middleware = this.$middlewares[middlewareName];
 
-                // console.log(middleware);
                 const middlewareResult = await middleware(req, rep);
                 if (middlewareResult instanceof Error) {
                   return done(middlewareResult);
@@ -53,7 +52,7 @@ class WebServer {
               }
             }
             //
-            return done();
+            done();
           },
         };
 

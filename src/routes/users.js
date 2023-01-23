@@ -1,51 +1,55 @@
 const Crypto = require("crypto");
-const { join } = require("path");
 const Database = require("../datebase");
 
 module.exports = {
-  "POST /join": {
+  "POST /signup": {
     async handler(req, rep) {
       const { id, pw } = req.body;
-      const joinUser = Database.sharedInstance().getCollection("users");
 
-      // DB 접근해서 set함수 실행해서 저장
-      joinUser.set("users", [{ id: id, pw: pw }]);
-
-      for (obj in joinUser.get("users")) {
-        console.log(obj);
+      const usersCol = Database.sharedInstance().getCollection("users");
+      //
+      if (usersCol.get(id) !== undefined) {
+        const error = new Error("has User");
+        error.status = 400;
+        return error;
       }
+      //
+      usersCol.set(id, { pw: pw });
 
-      return {
-        statusCode: 200,
-        data: "join successed",
-      };
+      return { statusCode: 200, data: { ok: "ok" } };
     },
   },
 
   "POST /login": {
     async handler(req, rep) {
       const { id, pw } = req.body;
-      console.log(id);
-      console.log(pw);
 
-      // TODO : DB 접근 후 password 일치 여부 확인
-      console.log("step 1");
-      const userInfo = Database.sharedInstance().getCollection("users");
+      const usersCol = Database.sharedInstance().getCollection("users");
+      const tokensCol = Database.sharedInstance().getCollection("tokens");
 
-      console.log(`step 2 : ${userInfo.$dataset}`);
-      console.log(`step 3333 : ${userInfo.get("user")}`);
+      // TODO : DB 접근해서 password 일치하는지 비교
+      console.log(usersCol);
+      const userPw = usersCol.get([id, "pw"]);
+
+      if (userPw === undefined) {
+        const error = new Error("user not exists");
+        error.status = 400;
+        return error;
+      }
 
       // TODO : 불일치 시 에러 발생 후 리턴
-      if (pw !== "ddddd") {
-        userInfo.set("tokens", "");
+      if (pw !== userPw) {
         const error = new Error("invalid password");
         error.status = 400;
         return error;
       }
-      const token = Crypto.randomUUID().replace(/-/g, "");
-      userInfo.set("tokens", token);
 
-      // TODO : 토큰, 및 유저 정보 DB에 입력
+      // TODO : 토큰 생성 후 토큰 및 유저정보 DB에 저장
+      const token = Crypto.randomUUID().replace(/-/g, "");
+      tokensCol.set(token, {
+        id,
+        expireAt: Date.now() + 24 * 60 * 60 * 1000,
+      });
 
       return {
         statusCode: 200,
