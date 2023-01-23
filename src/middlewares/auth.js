@@ -15,17 +15,22 @@ module.exports = async (req, rep) => {
 
   const tokenInfo = tokensCol.get(token);
   console.log("tokenInfo", tokenInfo);
+  const compareDate = Date.now() - tokenInfo.expireAt;
+  console.log(compareDate);
 
-  if (!tokenInfo) {
+  console.log("step 1");
+  if (tokenInfo === undefined) {
     const error = new Error("Not permitted");
     error.status = 403;
     return error;
-  } else if (Date.now() - tokenInfo.expireAt > 0) {
+  } else if (compareDate > 0) {
     tokensCol.del(token);
     const error = new Error("Token expired");
     error.status = 403;
     return error;
   }
+
+  console.log("step 2");
 
   req.token = tokenInfo;
   req.user = usersCol.get(tokenInfo.id);

@@ -45,6 +45,23 @@ class Collection {
 
     return value;
   }
+
+  del(key) {
+    const keyArr = Array.isArray(key) ? key : key.split(".");
+
+    if (keyArr.length === 0) return;
+
+    const lastKey = keyArr.pop();
+
+    let box = this.$dataset;
+
+    for (let i = 0; i < keyArr.length; i++) {
+      const key = keyArr[i];
+      if (box === undefined) return;
+    }
+
+    delete box[lastKey];
+  }
 }
 
 class Database {
