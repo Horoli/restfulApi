@@ -26,7 +26,7 @@ module.exports = {
 
       return {
         status: 200,
-        data: getTypeArr,
+        data: {type : getTypeArr},
       };
     },
   },
