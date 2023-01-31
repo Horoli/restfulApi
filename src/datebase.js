@@ -56,7 +56,7 @@ class Collection {
     let box = this.$dataset;
 
     for (let i = 0; i < keyArr.length; i++) {
-      const key = keyArr[i];
+      box = box[keyArr[i]];
       if (box === undefined) return;
     }
 
