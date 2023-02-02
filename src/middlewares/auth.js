@@ -15,15 +15,13 @@ module.exports = async (req, rep) => {
 
   const tokenInfo = tokensCol.get(token);
   console.log("tokenInfo", tokenInfo);
-  const compareDate = Date.now() - tokenInfo.expireAt;
-  console.log(compareDate);
 
   console.log("step 1");
   if (tokenInfo === undefined) {
     const error = new Error("Not permitted");
     error.status = 403;
     return error;
-  } else if (compareDate > 0) {
+  } else if (Date.now() - tokenInfo.expireAt > 0) {
     tokensCol.del(token);
     const error = new Error("Token expired");
     error.status = 403;
@@ -31,6 +29,9 @@ module.exports = async (req, rep) => {
   }
 
   console.log("step 2");
+  // 토큰 유효기간 30분 추가
+  tokenInfo.expireAt = Date.now() + 1 * 30 * 60 * 1000;
+  // tokenInfo.expireAt = Date.now() + 24 * 60 * 60 * 1000; // 24시간
 
   req.token = tokenInfo;
   req.user = usersCol.get(tokenInfo.id);

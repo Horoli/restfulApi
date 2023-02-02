@@ -21,6 +21,7 @@ module.exports = {
       // TODO : 중복된 데이터가 있으면 error를 반환 
       if (getType !== undefined) {
         const error = new Error("already has data");
+        error.status = 403
         return error;
       }
 

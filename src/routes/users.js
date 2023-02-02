@@ -60,7 +60,9 @@ module.exports = {
       const token = Crypto.randomUUID().replace(/-/g, "");
       tokensCol.set(token, {
         id,
-        expireAt: Date.now() + 24 * 60 * 60 * 1000,
+        // 토큰 유효기간 : 30분
+        expireAt: Date.now() + 1 * 30 * 60 * 1000,
+        // expireAt: Date.now() + 24 * 60 * 60 * 1000, // 24시간
       });
 
       return {
