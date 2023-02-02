@@ -50,7 +50,10 @@ module.exports = {
       for (i = 0; i < keysTokensCol.length; i++) {
         const token = keysTokensCol[i];
         const getId = tokensCol.get([token, "id"]);
-        if (getId === id) tokensCol.del(token);
+        const getExpireAt = tokensCol.get([token, "expireAt"]);
+        const compareDate = Date.now() - getExpireAt;
+        if (id === getId) tokensCol.del(token);
+        if (compareDate > 0) tokensCol.del(token);
       }
 
       // TODO : 토큰 생성 후 토큰 및 유저정보 DB에 저장
