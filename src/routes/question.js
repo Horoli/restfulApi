@@ -8,6 +8,9 @@ module.exports = {
       // TODO : type 추가
       const { question, answer } = req.body;
 
+      console.log('question', question);
+      console.log('answer', answer);
+
       const questionID = Crypto.randomUUID().replace(/-/g, "");
       const questionCol = Database.sharedInstance().getCollection("question");
 

@@ -5,28 +5,34 @@ module.exports = {
     middlewares: ["auth"],
     async handler(req, rep) {
       // TODO : type을 List<String>으로 저장
-      const { type } = req.body;
-
       const title = "type";
-      const typeCol = Database.sharedInstance().getCollection("type");
+      const data = req.body[title];
 
-      const getTypeArr = typeCol.get(title);
-      const getType = getTypeArr.find(function (typeData) {
-        return typeData === type;
+      const typeCol = Database.sharedInstance().getCollection(title);
+
+      // TODO : mainCategoryCol이 있으면 List로 가져오고, 없으면 빈 값(파일) 생성
+      const getTypeArr = typeCol.get(title) ?? typeCol.set(title, [data]);
+
+      // TODO : 중복된 데이터가 있는지 체크(없으면 null, 있으면 해당 data)
+      const getType = getTypeArr.find(function (inTypeData) {
+        return data === inTypeData;
       });
-      console.log("getTypeArr", getTypeArr);
-      console.log("getType", getType);
 
-      if (getTypeArr === undefined) {
-        typeCol.set(title, [type]);
-      } else if (getType === undefined) {
-        getTypeArr.push(type);
+      // TODO : 중복된 데이터가 있으면 error를 반환 
+      if (getType !== undefined) {
+        const error = new Error("already has data");
+        return error;
+      }
+
+      // TODO : 중복된 데이터가 없으면 col에 set
+      if (getType === undefined) {
+        getTypeArr.push(data);
         typeCol.set(title, getTypeArr);
       }
 
       return {
         status: 200,
-        data: {type : getTypeArr},
+        data: { type: getTypeArr },
       };
     },
   },
