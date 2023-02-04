@@ -67,7 +67,9 @@ module.exports = {
 
       return {
         statusCode: 200,
+
         data: {
+          // TODO : id, expireAt을 뿌려줘야함
           token,
         },
       };

@@ -1,6 +1,20 @@
 const Database = require("../datebase");
 
 module.exports = {
+  "GET /type": {
+    async handler(req, rep) {
+      const title = "type";
+      const typeCol = Database.sharedInstance().getCollection(title);
+
+      const getTypeArr = typeCol.get(title);
+
+      return {
+        status: 200,
+        data: { type: getTypeArr },
+      };
+    },
+  },
+
   "POST /type": {
     middlewares: ["auth"],
     async handler(req, rep) {
@@ -18,10 +32,10 @@ module.exports = {
         return data === inTypeData;
       });
 
-      // TODO : 중복된 데이터가 있으면 error를 반환 
+      // TODO : 중복된 데이터가 있으면 error를 반환
       if (getType !== undefined) {
         const error = new Error("already has data");
-        error.status = 403
+        error.status = 403;
         return error;
       }
 
