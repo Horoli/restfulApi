@@ -4,7 +4,7 @@ const Database = require("../datebase");
 module.exports = {
   // TODO : 맞춘 문제, 틀린 문제에 대한 정보를 저장하기 위해 guest 계정 생성
   // TODO : 앱에서만 실행 할 수 있도록 middleWare 추가??
-  "POST /initguest": {
+  "POST /guest": {
     async handler(req, rep) {
       const id = req.body.id;
       console.log("id", id);
@@ -29,6 +29,22 @@ module.exports = {
       return {
         statusCode: 200,
         data: guestCol.get(id),
+      };
+    },
+  },
+
+
+  "GET /guest": {
+    // middlewares: ["auth"],
+    async handler(req, rep) {
+
+      const title = "guest";
+      const guestCol = Database.sharedInstance().getCollection(title);
+      console.log(guestCol['$dataset']);
+      return {
+        status: 200,
+        header: {},
+        data: { guest: guestCol['$dataset'] }
       };
     },
   },

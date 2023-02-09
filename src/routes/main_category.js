@@ -50,4 +50,20 @@ module.exports = {
             };
         },
     },
+
+
+    //
+    "GET /maincategory": {
+        // middlewares: ["auth"],
+        async handler(req, rep) {
+
+            const title = "maincategory";
+            const mainCategoryCol = Database.sharedInstance().getCollection(title);
+            return {
+                status: 200,
+                header: {},
+                data: { maincategory: mainCategoryCol.get(title) }
+            };
+        },
+    },
 };
