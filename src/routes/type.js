@@ -1,20 +1,6 @@
 const Database = require("../datebase");
 
 module.exports = {
-  "GET /type": {
-    async handler(req, rep) {
-      const title = "type";
-      const typeCol = Database.sharedInstance().getCollection(title);
-
-      const getTypeArr = typeCol.get(title);
-
-      return {
-        status: 200,
-        data: { type: getTypeArr },
-      };
-    },
-  },
-
   "POST /type": {
     middlewares: ["auth"],
     async handler(req, rep) {
@@ -44,6 +30,20 @@ module.exports = {
         getTypeArr.push(data);
         typeCol.set(title, getTypeArr);
       }
+
+      return {
+        status: 200,
+        data: { type: getTypeArr },
+      };
+    },
+  },
+
+  "GET /type": {
+    async handler(req, rep) {
+      const title = "type";
+      const typeCol = Database.sharedInstance().getCollection(title);
+
+      const getTypeArr = typeCol.get(title);
 
       return {
         status: 200,
