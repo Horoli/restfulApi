@@ -11,12 +11,19 @@ module.exports = {
       const typeCol = Database.sharedInstance().getCollection(title);
 
       // TODO : mainCategoryCol이 있으면 List로 가져오고, 없으면 빈 값(파일) 생성
-      const getTypeArr = typeCol.get(title) ?? typeCol.set(title, [data]);
+      const getTypeArr = typeCol.get(title);
+
+      // db가 없으면 set하고 return
+      if (getTypeArr === undefined) {
+        typeCol.set(title, [data]);
+        return {
+          status: 200,
+          data: { type: typeCol.get(title) },
+        };
+      }
 
       // TODO : 중복된 데이터가 있는지 체크(없으면 null, 있으면 해당 data)
-      const getType = getTypeArr.find(function (inTypeData) {
-        return data === inTypeData;
-      });
+      const getType = getTypeArr.find((type) => type === data);
 
       // TODO : 중복된 데이터가 있으면 error를 반환
       if (getType !== undefined) {
@@ -26,10 +33,8 @@ module.exports = {
       }
 
       // TODO : 중복된 데이터가 없으면 col에 set
-      if (getType === undefined) {
-        getTypeArr.push(data);
-        typeCol.set(title, getTypeArr);
-      }
+      getTypeArr.push(data);
+      typeCol.set(title, getTypeArr);
 
       return {
         status: 200,

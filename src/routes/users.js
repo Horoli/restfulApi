@@ -67,7 +67,9 @@ module.exports = {
 
       return {
         statusCode: 200,
-
+        headers: {
+          "Access-Control-Allow-Origin": "http://localhost:3000/login",
+        },
         data: {
           // TODO : id, expireAt을 뿌려줘야함
           token,
