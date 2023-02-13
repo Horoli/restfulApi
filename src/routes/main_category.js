@@ -41,11 +41,9 @@ module.exports = {
             return {
                 status: 200,
                 data: mainCategoryCol["$dataset"],
-                // data: { maincategory: getMainCategoryArr },
             };
         },
     },
-
 
     //
     "GET /maincategory": {
@@ -57,7 +55,7 @@ module.exports = {
             return {
                 status: 200,
                 header: {},
-                data: { maincategory: mainCategoryCol.get(title) }
+                data: mainCategoryCol["$dataset"],
             };
         },
     },
