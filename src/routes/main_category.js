@@ -4,49 +4,44 @@ module.exports = {
     "POST /maincategory": {
         middlewares: ["auth"],
         async handler(req, rep) {
-            // TODO : mainCategory를 List<String>으로 저장
             const title = "maincategory";
-            const data = req.body[title];
+            const type = "type";
+            const id = "id";
+
+            const titleData = req.body[title];
+            const typeData = req.body[type];
+            const idData = req.body[id];
+            duplicateCheck = false;
+            console.log('duplicateCheck', duplicateCheck);
 
             const mainCategoryCol = Database.sharedInstance().getCollection(title);
 
-            // TODO : mainCategoryCol이 있으면 List로 가져오고, 없으면 빈 값(파일) 생성
-            const getMainCategoryArr = mainCategoryCol.get(title) ?? mainCategoryCol.set(title, [data]);
+            const objValues = Object.values(mainCategoryCol['$dataset']);
+            console.log('objValues', objValues);
 
-
-            // TODO : 중복된 데이터가 있는지 체크(없으면 null, 있으면 해당 data)
-            const getMainCategory = getMainCategoryArr.find(function (inCategoryData) {
-                return data === inCategoryData;
+            // TODO : keys를 돌면서 type이 중복되는지 체크
+            objValues.forEach(function (value) {
+                // TODO : 중복된 데이터가 있으면 duplicateCheck를 true로
+                if (value[title] === titleData) {
+                    duplicateCheck = true;
+                }
             });
 
-            // TODO : 중복된 데이터가 있으면 error를 반환 
-            if (getMainCategory !== undefined) {
+            // TODO : 중복된 데이터가 있으면 error return
+            if (duplicateCheck === true) {
                 const error = new Error("already has data");
                 error.status = 403;
                 return error;
             }
-            // if (getMainCategory !== undefined) {
-            //     const cateLength = getMainCategoryArr.length;
-            //     if (cateLength === 1) {
-            //         return {
-            //             status: 200,
-            //             data: { maincategory: getMainCategoryArr },
-            //         }
-            //     }
-            //     const error = new Error("already has data");
-            //     return error;
-            // }
 
-            // TODO : 중복된 데이터가 없으면 col에 set
-            if (getMainCategory === undefined) {
-                // set하기 전 data를 Arr에 추가
-                getMainCategoryArr.push(data);
-                mainCategoryCol.set(title, getMainCategoryArr);
+            if (duplicateCheck !== true) {
+                mainCategoryCol.set(idData, { id: idData, type: typeData, maincategory: titleData });
             }
 
             return {
                 status: 200,
-                data: { maincategory: getMainCategoryArr },
+                data: mainCategoryCol["$dataset"],
+                // data: { maincategory: getMainCategoryArr },
             };
         },
     },
