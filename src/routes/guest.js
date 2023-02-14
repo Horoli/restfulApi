@@ -6,7 +6,7 @@ module.exports = {
   // TODO : 앱에서만 실행 할 수 있도록 middleWare 추가??
   "POST /guest": {
     async handler(req, rep) {
-      const id = req.body.id;
+      const id = req.body.id.replace(/-/g, "");
       console.log("id", id);
 
       //   const id = Crypto.randomUUID().replace(/-/g, "");

@@ -68,6 +68,7 @@ class WebServer {
       port: this.$opts.port,
     });
 
+
     console.log(`[${new Date().toLocaleString()}] Server Started.`);
   }
 }
