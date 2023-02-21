@@ -3,9 +3,9 @@ restful_api for node.js
 
 ---
 
-> imyong projects
->> server : node.js(fastify)
+> imyong Projects
+- web : flutter(imyong / adminPage)
+- app : flutter(imyong_app)
+- API / DB server : node.js / fastify(restfulApi)
 
->> web : flutter
-
->> app : flutter
+> DB : JSON DB
