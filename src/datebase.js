@@ -10,7 +10,7 @@ class Collection {
   get(key) {
     const keyArr = Array.isArray(key) ? key : key.split(".");
 
-    if (keyArr.length === 0) return;
+    if (keyArr.length === 0) return this.$dataset;
 
     let box = this.$dataset;
 

@@ -1,45 +1,71 @@
 const Database = require("../datebase");
 
+const Symbols = {
+  type: Symbol("type"),
+}
+
 module.exports = {
   "POST /type": {
     middlewares: ["auth"],
     async handler(req, rep) {
-      // TODO : type을 List<String>으로 저장
-      const title = "type";
-      const data = req.body[title];
+      const { type } = req.body
 
-      const typeCol = Database.sharedInstance().getCollection(title);
+      const typeCol = Database.sharedInstance().getCollection("type")
 
-      // TODO : mainCategoryCol이 있으면 List로 가져오고, 없으면 빈 값(파일) 생성
-      const getTypeArr = typeCol.get(title);
-
-      // db가 없으면 set하고 return
-      if (getTypeArr === undefined) {
-        typeCol.set(title, [data]);
-        return {
-          status: 200,
-          data: { type: typeCol.get(title) },
-        };
+      const typeExists = !!typeCol.get(type)
+      if (typeExists) {
+        const error = new Error("already has data")
+        error.status = 403
+        return error
       }
-
-      // TODO : 중복된 데이터가 있는지 체크(없으면 null, 있으면 해당 data)
-      const getType = getTypeArr.find((type) => type === data);
-
-      // TODO : 중복된 데이터가 있으면 error를 반환
-      if (getType !== undefined) {
-        const error = new Error("already has data");
-        error.status = 403;
-        return error;
-      }
-
-      // TODO : 중복된 데이터가 없으면 col에 set
-      getTypeArr.push(data);
-      typeCol.set(title, getTypeArr);
 
       return {
         status: 200,
-        data: { type: getTypeArr },
-      };
+        data: typeCol.set(type, {
+          categories: [],
+          parents:[],
+          child:[],
+          createdAt: Date.now(),
+          updatedat: Date.now()
+        })
+      }
+
+      // TODO : type을 List<String>으로 저장
+      // const key = "type";
+      // const data = req.body[key];
+
+      // const typeCol = Database.sharedInstance().getCollection(key);
+
+      // // TODO : mainCategoryCol이 있으면 List로 가져오고, 없으면 빈 값(파일) 생성
+      // // const getTypeArr = typeCol.get(title);
+
+      // // db가 없으면 set하고 return
+      // if (getTypeArr === undefined) {
+      //   typeCol.set(key, [data]);
+      //   return {
+      //     status: 200,
+      //     data: { type: typeCol.get(key) },
+      //   };
+      // }
+
+      // // TODO : 중복된 데이터가 있는지 체크(없으면 null, 있으면 해당 data)
+      // // const getType = getTypeArr.find((type) => type === data);
+
+      // // TODO : 중복된 데이터가 있으면 error를 반환
+      // if (getType !== undefined) {
+      //   const error = new Error("already has data");
+      //   error.status = 403;
+      //   return error;
+      // }
+
+      // // TODO : 중복된 데이터가 없으면 col에 set
+      // getTypeArr.push(data);
+      // typeCol.set(key, getTypeArr);
+
+      // return {
+      //   status: 200,
+      //   data: { type: getTypeArr },
+      // };
     },
   },
 

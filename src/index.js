@@ -3,14 +3,25 @@ const Path = require("path");
 
 const Fastify = require("fastify");
 
+const Database = require('./datebase')
+
+const Config = require('./config.json')
+
 class WebServer {
   constructor(opts = {}) {
     this.$opts = opts;
     this.$webServer = Fastify();
     this.$middlewares = {};
 
+    this.$_initDatabases();
     this.$_initMiddlewares();
     this.$_initRoutes();
+  }
+
+  $_initDatabases() {
+    // Category Initialize
+    const categoryCol = Database.sharedInstance().getCollection("category")
+    categoryCol.set('mainCategories', Config.mainCategories)
   }
 
   $_initMiddlewares() {
