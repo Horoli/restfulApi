@@ -14,6 +14,7 @@ module.exports = {
 
             const categoryCol = Database.sharedInstance().getCollection("category")
 
+
             if (id === undefined) {
                 return {
                     status: 200,
@@ -22,6 +23,7 @@ module.exports = {
             }
 
             const subCategory = Object.values(categoryCol.get('subCategories') ?? {})
+            console.log('subCategory', subCategory);
             return {
                 status: 200,
                 data: subCategory.filter(category => category.parent === id)
@@ -36,10 +38,23 @@ module.exports = {
             const categoryCol = Database.sharedInstance().getCollection("category")
 
             let parentIsSubCategory = false
+            // let parentExists = !!categoryCol.get(`mainCategories.${parent}`)
             let parentExists = !!categoryCol.get(`mainCategories.${parent}`)
-            if (parentExists === undefined) {
+
+
+            // console.log(!categoryCol.get(`mainCategories.${parent}`))
+            // console.log(parentExists, parentExists);
+
+            if (parentExists) {
+                // if (parentExists === undefined) {
                 parentIsSubCategory = true
-                parentExists = !!categoryCol.get(`subCategories.${parent}`)
+                parentExists = !categoryCol.get(`subCategories.${parent}`)
+                console.log('test', categoryCol.get(`subCategories.${parent}`));
+
+                // const getValue = Object.values(categoryCol.get('subCategories'));
+                // const get = getValue.filter(subcategory => subcategory.parent === parent)
+                // console.log(get);
+
             }
 
             if (!parentExists) {
@@ -57,8 +72,10 @@ module.exports = {
                 updatedAt: Date.now()
             }
 
+
             if (parentIsSubCategory) {
                 const parentCategory = categoryCol.get(`subCategories.${parent}`)
+                // console.log('parentCategory', parentCategory)
                 parentCategory.children.push(categoryModel.id)
                 categoryCol.set(`subCategories.${parent}`, parentCategory)
             }
@@ -127,4 +144,7 @@ module.exports = {
             }
         }
     },
+
+    // TODO : subcategory를 삭제하는 기능 추가
+    // 
 };
