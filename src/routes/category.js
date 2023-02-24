@@ -39,21 +39,28 @@ module.exports = {
 
             let parentIsSubCategory = false
             // let parentExists = !!categoryCol.get(`mainCategories.${parent}`)
+            // 입력된 parent가 mainCategories에 포함되어 있으면 false
             let parentExists = !!categoryCol.get(`mainCategories.${parent}`)
+
+            console.log(categoryCol.get(`mainCategories.${parent}`));
+            console.log(!categoryCol.get(`mainCategories.${parent}`));
+            console.log(!!categoryCol.get(`mainCategories.${parent}`));
+
 
 
             // console.log(!categoryCol.get(`mainCategories.${parent}`))
             // console.log(parentExists, parentExists);
 
-            if (parentExists) {
+            if (!parentExists) {
                 // if (parentExists === undefined) {
                 parentIsSubCategory = true
-                parentExists = !categoryCol.get(`subCategories.${parent}`)
-                console.log('test', categoryCol.get(`subCategories.${parent}`));
+                parentExists = !!categoryCol.get(`subCategories.${parent}`)
+                console.log('exist 2', parentExists);
+                // console.log('test', categoryCol.get(`subCategories.${parent}`));
 
-                // const getValue = Object.values(categoryCol.get('subCategories'));
-                // const get = getValue.filter(subcategory => subcategory.parent === parent)
-                // console.log(get);
+                const getValue = Object.values(categoryCol.get('subCategories'));
+                const get = getValue.filter(subcategory => subcategory.parent === parent)
+                console.log(get);
 
             }
 
