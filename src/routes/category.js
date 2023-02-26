@@ -44,6 +44,12 @@ module.exports = {
     async handler(req, rep) {
       const { parent, name } = req.body;
 
+      if (name === "") {
+        const error = new Error("name is Not exists");
+        error.status = 403;
+        return error;
+      }
+
       const categoryCol = Database.sharedInstance().getCollection("category");
 
       let parentIsSubCategory = false;
