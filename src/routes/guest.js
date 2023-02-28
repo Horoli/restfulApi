@@ -43,7 +43,6 @@ module.exports = {
       console.log(guestCol['$dataset']);
       return {
         status: 200,
-        header: {},
         data: { guest: guestCol['$dataset'] }
       };
     },

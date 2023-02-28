@@ -14,7 +14,14 @@ module.exports = {
       const questionID = Crypto.randomUUID().replace(/-/g, "");
       const questionCol = Database.sharedInstance().getCollection("question");
 
-      questionCol.set(questionID, { question: question, answer: answer });
+      // TODO : add parameter
+      questionCol.set(
+        questionID, {
+        question: question,
+        answer: answer,
+        updatedAt: DateTime.now(),
+
+      });
 
       return {
         data: "ok",
