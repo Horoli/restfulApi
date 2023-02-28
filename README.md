@@ -9,3 +9,4 @@ restful_api for node.js
 - API / DB server : node.js / fastify(restfulApi)
 
 > DB : JSON DB
+- TODO : add DB files to Git ignore
