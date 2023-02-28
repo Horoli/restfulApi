@@ -13,6 +13,7 @@ module.exports = {
 
             const categoryCol = Database.sharedInstance().getCollection("category");
 
+            // TODO : 입력된 id가 없으면 mainCategories를 return
             if (id === undefined) {
                 return {
                     status: 200,
@@ -32,10 +33,20 @@ module.exports = {
     "GET /subcategory": {
         middlewares: ["auth"],
         async handler(req, rep) {
+            const { map } = req.query
+            console.log('map', map);
+
             const categoryCol = Database.sharedInstance().getCollection("category");
+            console.log('categoryCol', categoryCol.get("subCategories"));
+            if (map === undefined) {
+                return {
+                    status: 200,
+                    data: Object.values(categoryCol.get("subCategories")),
+                }
+            }
             return {
                 status: 200,
-                data: Object.values(categoryCol.get("subCategories")),
+                data: categoryCol.get("subCategories"),
             };
         },
     },
