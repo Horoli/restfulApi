@@ -29,8 +29,7 @@ module.exports = {
             };
         },
     },
-    //
-
+    // TODO : subCategoryCol에 있는 모든 데이터를 가져옴
     "GET /subcategory": {
         middlewares: ["auth"],
         async handler(req, rep) {
@@ -51,6 +50,22 @@ module.exports = {
             };
         },
     },
+    // TODO : question을 생성할때 children이 없는 category를 사용해야하기 때문에
+    // children이 없는 category를 get
+    "GET /nochildrencategory": {
+        middlewares: ["auth"],
+        async handler(req, rep) {
+            const categoryCol = Database.sharedInstance().getCollection("category");
+            const subCategory = Object.values(categoryCol.get("subCategories") ?? {});
+            console.log('subCategory', subCategory);
+
+            return {
+                status: 200,
+                data: subCategory.filter((category) => category.children.length == 0)
+            }
+        }
+    }
+    ,
     "POST /category": {
         middlewares: ["auth"],
         async handler(req, rep) {
@@ -179,6 +194,4 @@ module.exports = {
         },
     },
 
-    // TODO : subcategory를 삭제하는 기능 추가
-    //
 };

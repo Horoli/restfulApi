@@ -24,7 +24,7 @@ module.exports = {
             createdAt: Date.now(),
             // TODO : categoryId는 children이 없는 categoryId를 받아야함.
             // children이 있는 id를 받으면 error
-            category: categoryID,
+            categoryID: categoryID,
             // TODO : difficultyCol 생성 후 클라이언트에서 선택한 difficulty를 입력할 수 있도록 해야함
             difficulty: difficulty,
             score: score,
@@ -36,11 +36,15 @@ module.exports = {
     },
   },
 
+  // TODO : object.values만 return(type : list)
   "GET /question": {
     middlewares: ["auth"],
     async handler(req, rep) {
+
+      const questionCol = Database.sharedInstance().getCollection("question");
+      const question = questionCol["$dataset"];
       return {
-        data: "ok",
+        data: Object.values(question),
       };
     },
   },
