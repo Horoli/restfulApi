@@ -18,6 +18,7 @@ class WebServer {
     this.$_initRoutes();
   }
 
+  // TODO : 서버 실행 시 mainCategory의 초기값을 생성
   $_initDatabases() {
     // Category Initialize
     const categoryCol = Database.sharedInstance().getCollection("category")

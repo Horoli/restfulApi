@@ -56,6 +56,7 @@ module.exports = {
         async handler(req, rep) {
             const { parent, name } = req.body;
 
+            // TODO : 카테고리 추가 할때 name이 입력되지 않으면 error return
             if (name === "") {
                 const error = new Error("name is Not exists");
                 error.status = 403;
