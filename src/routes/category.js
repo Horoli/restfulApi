@@ -147,6 +147,18 @@ module.exports = {
             const { id } = req.body;
 
             const categoryCol = Database.sharedInstance().getCollection("category");
+            const questionCol = Database.sharedInstance().getCollection("question");
+
+            const questions = Object.values(questionCol['$dataset']);
+
+            // TODO : category를 삭제하면 해당 category의 id를 가지고 있는 question의
+            // categoryID를 초기화 해줌
+            // TODO : 향후 question   
+            const filteredQuestion = questions.filter((question) => question.categoryID === id);
+            for (var index = 0; index < filteredQuestion.length; index++) {
+                questionCol['$dataset'][filteredQuestion[index].id].categoryID = '';
+                console.log("questionCol['$dataset]", questionCol['$dataset']);
+            }
 
             const category = categoryCol.get(`subCategories.${id}`);
             if (category === undefined) {

@@ -16,11 +16,11 @@ module.exports = {
             const mainCategoryCol =
                 Database.sharedInstance().getCollection(maincategory);
 
-            const objValues = Object.values(mainCategoryCol["$dataset"]);
-            console.log("objValues", objValues);
+            const mainColValues = Object.values(mainCategoryCol["$dataset"]);
+            console.log("objValues", mainColValues);
 
             // TODO : keys를 돌면서 type이 중복되는지 체크
-            objValues.forEach(function (value) {
+            mainColValues.forEach(function (value) {
                 // TODO : 중복된 데이터가 있으면 duplicateCheck를 true로
                 if (value[maincategory] === titleData) {
                     duplicateCheck = true;

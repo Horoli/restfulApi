@@ -3,5 +3,11 @@
         "en": "영어",
         "ko": "국어",
         "history": "한국사"
+    },
+    "difficulty": {
+        "easy": "쉬움",
+        "normal": "보통",
+        "hard": "어려움",
+        "veryHard": "매우 어려움"
     }
 }

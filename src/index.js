@@ -22,7 +22,9 @@ class WebServer {
   $_initDatabases() {
     // Category Initialize
     const categoryCol = Database.sharedInstance().getCollection("category")
+    const difficultyCol = Database.sharedInstance().getCollection("difficulty")
     categoryCol.set('mainCategories', Config.mainCategories)
+    difficultyCol.set('difficulty', Config.difficulty)
   }
 
   $_initMiddlewares() {
