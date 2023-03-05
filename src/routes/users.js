@@ -1,5 +1,6 @@
 const Crypto = require("crypto");
 const Database = require("../datebase");
+const Utility = require("../utility");
 
 module.exports = {
   "POST /signup": {
@@ -57,7 +58,8 @@ module.exports = {
       }
 
       // TODO : 토큰 생성 후 토큰 및 유저정보 DB에 저장
-      const token = Crypto.randomUUID().replace(/-/g, "");
+      // const token = Crypto.randomUUID().replace(/-/g, "");
+      const token = Utility.UUID();
       tokensCol.set(token, {
         id,
         // 토큰 유효기간 : 30분
@@ -67,9 +69,6 @@ module.exports = {
 
       return {
         statusCode: 200,
-        headers: {
-          "Access-Control-Allow-Origin": "http://localhost:3000/login",
-        },
         data: {
           // TODO : id, expireAt을 뿌려줘야함
           token,
