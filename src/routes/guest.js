@@ -3,8 +3,6 @@ const Database = require("../datebase");
 const Utility = require("../utility");
 
 module.exports = {
-  // TODO : 맞춘 문제, 틀린 문제에 대한 정보를 저장하기 위해 guest 계정 생성
-  // TODO : 앱에서만 실행 할 수 있도록 middleWare 추가??
   "POST /guest": {
     async handler(req, rep) {
       const id = req.body.id.replace(/-/g, "");
@@ -14,11 +12,7 @@ module.exports = {
         error.status = 400;
         return error;
       }
-      console.log("id", id);
-
-      //   const id = Crypto.randomUUID().replace(/-/g, "");
       const guestCol = Database.sharedInstance().getCollection("guest");
-      const tokensCol = Database.sharedInstance().getCollection("tokens");
 
       if (guestCol.get(id) === undefined) {
         return {
@@ -32,6 +26,35 @@ module.exports = {
             wishQuestion: [],
           }),
         };
+      }
+
+      return {
+        statusCode: 200,
+        data: guestCol.get(id),
+      };
+    },
+  },
+
+  "POST /guestlogin": {
+    async handler(req, rep) {
+      const id = req.body.id.replace(/-/g, "");
+
+      console.log("id", id);
+
+      const guestCol = Database.sharedInstance().getCollection("guest");
+      const tokensCol = Database.sharedInstance().getCollection("tokens");
+
+      if (id.length !== 32) {
+        const error = new Error("bad id");
+        error.status = 400;
+        return error;
+      }
+
+      const guest = guestCol.get(id);
+      if (guest === undefined) {
+        const error = new Error("guest not exists");
+        error.status = 400;
+        return error;
       }
 
       const keysTokensCol = Object.keys(tokensCol["$dataset"]);
@@ -64,12 +87,12 @@ module.exports = {
     middlewares: ["auth"],
     async handler(req, rep) {
       const { id } = req.query;
-      const convertId = id.replace(/-/g, "");
+      // const convertId = id.replace(/-/g, "");
       const guestCol = Database.sharedInstance().getCollection("guest");
 
       return {
         status: 200,
-        data: guestCol.get(convertId),
+        data: guestCol.get(id),
       };
     },
   },
