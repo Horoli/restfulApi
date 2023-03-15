@@ -29,6 +29,7 @@ module.exports = {
             updatedAt: Date.now(),
             currectQuestion: [],
             wrongQuestion: [],
+            wishQuestion: [],
           }),
         };
       }
