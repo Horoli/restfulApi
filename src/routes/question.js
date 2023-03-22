@@ -34,6 +34,36 @@ module.exports = {
     },
   },
 
+  "POST /filteredquestion": {
+    middlewares: ["auth"],
+    async handler(req, rep) {
+      const { subCategoryID } = req.body;
+      console.log("subCategoryID", subCategoryID);
+
+      const categoryCol = Database.sharedInstance().getCollection("category");
+      const questionCol = Database.sharedInstance().getCollection("question");
+
+      const questionValues = Object.values(questionCol["$dataset"]);
+
+      // console.log("question", questionValues);
+
+      const asd = questionValues.filter(
+        (item) => item.categoryID === subCategoryID
+      );
+
+      console.log("asd", asd);
+
+      // const asd = Object.values(question).find(
+      //   (question) => question.categoryID == subCategoryID
+      // );
+      // console.log("asd", asd.length);
+
+      return {
+        data: Object.values(question),
+      };
+    },
+  },
+
   // TODO : object.values만 return(type : list)
   "GET /question": {
     middlewares: ["auth"],
