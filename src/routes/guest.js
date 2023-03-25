@@ -83,6 +83,32 @@ module.exports = {
     },
   },
 
+  "PATCH /guest": {
+    middlewares: ["auth"],
+    async handler(req, rep) {
+      const { id, wishQuestion } = req.body;
+
+      const guestCol = Database.sharedInstance().getCollection("guest");
+
+      const guestInfo = guestCol.get(id);
+      guestInfo.wishQuestion = wishQuestion;
+      // guestCol.set(id, {
+      //   id:id,
+
+      //       createdAt: Date.now(),
+      //       updatedAt: Date.now(),
+      //       currectQuestion: [],
+      //       wrongQuestion: [],
+      //   wishQuestion: wishQuestion,
+      // });
+
+      return {
+        statusCodee: 200,
+        data: guestInfo,
+      };
+    },
+  },
+
   "GET /guest": {
     middlewares: ["auth"],
     async handler(req, rep) {

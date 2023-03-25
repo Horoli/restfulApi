@@ -47,11 +47,11 @@ module.exports = {
 
       // console.log("question", questionValues);
 
-      const asd = questionValues.filter(
+      const filteredQuestion = questionValues.filter(
         (item) => item.categoryID === subCategoryID
       );
 
-      console.log("asd", asd);
+      console.log("filteredQuestion", filteredQuestion);
 
       // const asd = Object.values(question).find(
       //   (question) => question.categoryID == subCategoryID
@@ -59,7 +59,7 @@ module.exports = {
       // console.log("asd", asd.length);
 
       return {
-        data: Object.values(question),
+        data: filteredQuestion,
       };
     },
   },
