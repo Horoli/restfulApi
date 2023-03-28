@@ -6,6 +6,7 @@ const Fastify = require("fastify");
 const Database = require("./datebase");
 
 const Config = require("./config.json");
+const Utility = require("../src/utility");
 const CSVToJSON = require("csvtojson");
 
 class WebServer {
@@ -21,19 +22,44 @@ class WebServer {
   }
 
   // TODO : test, csv to json
-  $_initCSVToJSON() {
-    CSVToJSON()
+  async $_initCSVToJSON() {
+    const csvData = await CSVToJSON()
       .fromFile("src/assets/test_csv.csv")
       .then((data) => {
-        console.log(data);
-        console.log(data[0]);
+        return data;
       });
 
     const categoryCol = Database.sharedInstance().getCollection("category");
+    const questionCol = Database.sharedInstance().getCollection("question");
     const subCategories = Object.values(categoryCol.get("subCategories"));
-    const title = "교과교육론";
 
-    console.log(subCategories.find((item) => item.name == title));
+    console.log("subCategories", subCategories);
+    console.log("questionCol", questionCol);
+
+    for (const data of csvData) {
+      console.log("data", data.subCategory);
+      console.log(subCategories.find((item) => item.name == data.subCategory));
+
+      const getSub = subCategories.find(
+        (item) => item.name == data.subCategory
+      );
+
+      const newID = Utility.UUID(true);
+
+      questionCol.set(newID, {
+        id: newID,
+        question: data.question,
+        answer: data.answer,
+        updatedAt: Date.now(),
+        createdAt: Date.now(),
+        categoryID: getSub.id,
+        difficulty: "normal",
+        scroe: 3,
+        period: [],
+      });
+    }
+
+    // console.log(subCategories.find((item) => item.name == title));
   }
 
   // TODO : 서버 실행 시 mainCategory의 초기값을 생성

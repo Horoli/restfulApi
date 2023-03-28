@@ -1,5 +1,3 @@
-number,name,count
-2,kim,2222
-3,lee,3333
-4,sim,4444
-5,jung,5555
+mainCategory,subCategory,description,question,answer
+수학,교과역량,도구적이해,방법은 알지만 원리는 알지 못하는 상태를 (          ) 이해라고 한다.,도구적
+영어,교과교육론,이거,교과교육론 문제,교과교육론 답
