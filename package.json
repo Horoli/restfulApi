@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "-": "^0.0.1",
+    "csvtojson": "^2.0.10",
     "fastify": "^4.10.2",
     "on-change": "3.0.2",
     "onchange": "^7.1.0",

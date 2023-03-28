@@ -3,9 +3,10 @@ const Path = require("path");
 
 const Fastify = require("fastify");
 
-const Database = require('./datebase')
+const Database = require("./datebase");
 
-const Config = require('./config.json')
+const Config = require("./config.json");
+const CSVToJSON = require("csvtojson");
 
 class WebServer {
   constructor(opts = {}) {
@@ -13,18 +14,35 @@ class WebServer {
     this.$webServer = Fastify();
     this.$middlewares = {};
 
-    this.$_initDatabases();
+    this.$_initCSVToJSON();
+    this.$_initDatabase();
     this.$_initMiddlewares();
     this.$_initRoutes();
   }
 
+  // TODO : test, csv to json
+  $_initCSVToJSON() {
+    CSVToJSON()
+      .fromFile("src/assets/test_csv.csv")
+      .then((data) => {
+        console.log(data);
+        console.log(data[0]);
+      });
+
+    const categoryCol = Database.sharedInstance().getCollection("category");
+    const subCategories = Object.values(categoryCol.get("subCategories"));
+    const title = "교과교육론";
+
+    console.log(subCategories.find((item) => item.name == title));
+  }
+
   // TODO : 서버 실행 시 mainCategory의 초기값을 생성
-  $_initDatabases() {
+  $_initDatabase() {
     // Category Initialize
-    const categoryCol = Database.sharedInstance().getCollection("category")
-    const difficultyCol = Database.sharedInstance().getCollection("difficulty")
-    categoryCol.set('mainCategories', Config.mainCategories)
-    difficultyCol.set('difficulty', Config.difficulty)
+    const categoryCol = Database.sharedInstance().getCollection("category");
+    const difficultyCol = Database.sharedInstance().getCollection("difficulty");
+    categoryCol.set("mainCategories", Config.mainCategories);
+    difficultyCol.set("difficulty", Config.difficulty);
   }
 
   $_initMiddlewares() {
@@ -81,7 +99,6 @@ class WebServer {
       host: this.$opts.host,
       port: this.$opts.port,
     });
-
 
     console.log(`[${new Date().toLocaleString()}] Server Started.`);
   }
