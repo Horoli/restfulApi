@@ -1,15 +1,16 @@
 const Fs = require("fs");
+const Database = require("./datebase");
+const Utility = require("../src/utility");
+
+const CSVToJSON = require("csvtojson");
 const Path = require("path");
+const Config = require("./config.json");
 
 const Fastify = require("fastify");
+const Cors = require("@fastify/cors");
 
-const Database = require("./datebase");
 
-const Config = require("./config.json");
-const Utility = require("../src/utility");
-const CSVToJSON = require("csvtojson");
-
-class WebServer {
+class WebServer  {
   constructor(opts = {}) {
     this.$opts = opts;
     this.$webServer = Fastify();
@@ -23,41 +24,41 @@ class WebServer {
 
   // TODO : test, csv to json
   async $_initCSVToJSON() {
-    const csvData = await CSVToJSON()
-      .fromFile("src/assets/test_csv.csv")
-      .then((data) => {
-        return data;
-      });
+    // const csvData = await CSVToJSON()
+    //   .fromFile("src/assets/test_csv.csv")
+    //   .then((data) => {
+    //     return data;
+    //   });
 
-    const categoryCol = Database.sharedInstance().getCollection("category");
-    const questionCol = Database.sharedInstance().getCollection("question");
-    const subCategories = Object.values(categoryCol.get("subCategories"));
+    // const categoryCol = Database.sharedInstance().getCollection("category");
+    // const questionCol = Database.sharedInstance().getCollection("question");
+    // const subCategories = Object.values(categoryCol.get("subCategories"));
 
-    console.log("subCategories", subCategories);
-    console.log("questionCol", questionCol);
+    // console.log("subCategories", subCategories);
+    // console.log("questionCol", questionCol);
 
-    for (const data of csvData) {
-      console.log("data", data.subCategory);
-      console.log(subCategories.find((item) => item.name == data.subCategory));
+    // for (const data of csvData) {
+    //   console.log("data", data.subCategory);
+    //   console.log(subCategories.find((item) => item.name == data.subCategory));
 
-      const getSub = subCategories.find(
-        (item) => item.name == data.subCategory
-      );
+    //   const getSub = subCategories.find(
+    //     (item) => item.name == data.subCategory
+    //   );
 
-      const newID = Utility.UUID(true);
+    //   const newID = Utility.UUID(true);
 
-      questionCol.set(newID, {
-        id: newID,
-        question: data.question,
-        answer: data.answer,
-        updatedAt: Date.now(),
-        createdAt: Date.now(),
-        categoryID: getSub.id,
-        difficulty: "normal",
-        scroe: 3,
-        period: [],
-      });
-    }
+    //   questionCol.set(newID, {
+    //     id: newID,
+    //     question: data.question,
+    //     answer: data.answer,
+    //     updatedAt: Date.now(),
+    //     createdAt: Date.now(),
+    //     categoryID: getSub.id,
+    //     difficulty: "normal",
+    //     scroe: 3,
+    //     period: [],
+    //   });
+    // }
 
     // console.log(subCategories.find((item) => item.name == title));
   }
@@ -120,7 +121,11 @@ class WebServer {
     }
   }
 
-  start() {
+  start(){
+    
+    // TODO : cors header setting
+    this.$webServer.register(Cors, {origin:"*"});
+
     this.$webServer.listen({
       host: this.$opts.host,
       port: this.$opts.port,
