@@ -80,7 +80,7 @@ module.exports = {
   "PATCH /question": {
     middlewares: ["auth"],
     async handler(req, rep) {
-      const { id, question, answer, categoryID } = req.body;
+      const { id, question, answer, categoryID, images } = req.body;
 
       const questionCol = Database.sharedInstance().getCollection("question");
 
@@ -90,6 +90,7 @@ module.exports = {
       getQuestion.answer = answer;
       getQuestion.categoryID = categoryID;
       getQuestion.updatedAt = Date.now();
+      getQuestion.images = images;
 
       return {
         data: "ok",
