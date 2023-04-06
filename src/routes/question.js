@@ -6,7 +6,7 @@ module.exports = {
   "POST /question": {
     middlewares: ["auth"],
     async handler(req, rep) {
-      const { question, answer, categoryID, difficulty, score, periodID } =
+      const { question, answer, categoryID, difficulty, score, images, periodID } =
         req.body;
 
       const questionID = Utility.UUID();
@@ -27,8 +27,9 @@ module.exports = {
           difficulty: difficulty,
           score: score,
           // TODO : periodCol 생성해서 id를 입력받음
-          //
           period: [],
+          // TODO : 이미지(base64String) 저장
+          images: images,
         }),
       };
     },
