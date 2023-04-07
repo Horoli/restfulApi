@@ -13,7 +13,7 @@ module.exports = {
       const questionCol = Database.sharedInstance().getCollection("question");
 
       const imageIDs = [];
-      console.log(images.length);
+
 
       if (images.length > 0) {
         for (const image of images) {
@@ -22,28 +22,17 @@ module.exports = {
         }
       }
 
-      questionCol.set(questionID, {
-        id: questionID,
-        question: question,
-        answer: answer,
-        updatedAt: Date.now(),
-        createdAt: Date.now(),
-        // TODO : categoryId는 children이 없는 categoryId를 받아야함.
-        // children이 있는 id를 받으면 error
-        categoryID: categoryID,
-        // TODO : difficultyCol 생성 후 클라이언트에서 선택한 difficulty를 입력할 수 있도록 해야함
-        difficulty: difficulty,
-        score: score,
-        // TODO : periodCol 생성해서 id를 입력받음
-        period: [],
-        // TODO : 이미지(base64String) 저장
-        images: imageIDs,
-      });
+      console.log('imageIDs.length', imageIDs.length);
+      console.log('imageIDs', imageIDs);
+
+
+
 
       return {
         statusCode: 200,
-        data: {
-          questionID: {
+        data:
+
+          questionCol.set(questionID, {
             id: questionID,
             question: question,
             answer: answer,
@@ -57,9 +46,26 @@ module.exports = {
             score: score,
             // TODO : periodCol 생성해서 id를 입력받음
             period: [],
-            images: images,
-          }
-        },
+            // TODO : 이미지(base64String) 저장
+            images: imageIDs,
+          }),
+        // questionID: {
+        //   id: questionID,
+        //   question: question,
+        //   answer: answer,
+        //   updatedAt: Date.now(),
+        //   createdAt: Date.now(),
+        //   // TODO : categoryId는 children이 없는 categoryId를 받아야함.
+        //   // children이 있는 id를 받으면 error
+        //   categoryID: categoryID,
+        //   // TODO : difficultyCol 생성 후 클라이언트에서 선택한 difficulty를 입력할 수 있도록 해야함
+        //   difficulty: difficulty,
+        //   score: score,
+        //   // TODO : periodCol 생성해서 id를 입력받음
+        //   period: [],
+        //   images: images,
+        // }
+
       };
     },
   },
@@ -104,10 +110,25 @@ module.exports = {
     middlewares: ["auth"],
     async handler(req, rep) {
       const questionCol = Database.sharedInstance().getCollection("question");
-      const question = questionCol["$dataset"];
+      const questions = Object.values(questionCol["$dataset"]);
+
+      // questions에 저장된 question의 imageIDs에 저장된 imageID를 이용해서
+      // 'src/assets/images'에 저장된 파일 중 해당 uuid를 가진 파일의 내용을 읽어서 base64로 변환 후 리턴
+
+      // questions의 question의 imageIDs를 복사해서 copyQuestions에 저장
+      const copyQuestions = JSON.parse(JSON.stringify(questions));
+
+      for (const question of copyQuestions) {
+        const images = [];
+        for (const imageID of question.images) {
+          const image = Utility.getImage(imageID);
+          images.push(image);
+        }
+        question.images = images;
+      }
 
       return {
-        data: Object.values(question),
+        data: copyQuestions,
       };
     },
   },
