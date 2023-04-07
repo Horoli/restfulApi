@@ -12,25 +12,54 @@ module.exports = {
       const questionID = Utility.UUID();
       const questionCol = Database.sharedInstance().getCollection("question");
 
+      const imageIDs = [];
+      console.log(images.length);
+
+      if (images.length > 0) {
+        for (const image of images) {
+          const imageID = Utility.saveImage(image);
+          imageIDs.push(imageID);
+        }
+      }
+
+      questionCol.set(questionID, {
+        id: questionID,
+        question: question,
+        answer: answer,
+        updatedAt: Date.now(),
+        createdAt: Date.now(),
+        // TODO : categoryId는 children이 없는 categoryId를 받아야함.
+        // children이 있는 id를 받으면 error
+        categoryID: categoryID,
+        // TODO : difficultyCol 생성 후 클라이언트에서 선택한 difficulty를 입력할 수 있도록 해야함
+        difficulty: difficulty,
+        score: score,
+        // TODO : periodCol 생성해서 id를 입력받음
+        period: [],
+        // TODO : 이미지(base64String) 저장
+        images: imageIDs,
+      });
+
       return {
         statusCode: 200,
-        data: questionCol.set(questionID, {
-          id: questionID,
-          question: question,
-          answer: answer,
-          updatedAt: Date.now(),
-          createdAt: Date.now(),
-          // TODO : categoryId는 children이 없는 categoryId를 받아야함.
-          // children이 있는 id를 받으면 error
-          categoryID: categoryID,
-          // TODO : difficultyCol 생성 후 클라이언트에서 선택한 difficulty를 입력할 수 있도록 해야함
-          difficulty: difficulty,
-          score: score,
-          // TODO : periodCol 생성해서 id를 입력받음
-          period: [],
-          // TODO : 이미지(base64String) 저장
-          images: images,
-        }),
+        data: {
+          questionID: {
+            id: questionID,
+            question: question,
+            answer: answer,
+            updatedAt: Date.now(),
+            createdAt: Date.now(),
+            // TODO : categoryId는 children이 없는 categoryId를 받아야함.
+            // children이 있는 id를 받으면 error
+            categoryID: categoryID,
+            // TODO : difficultyCol 생성 후 클라이언트에서 선택한 difficulty를 입력할 수 있도록 해야함
+            difficulty: difficulty,
+            score: score,
+            // TODO : periodCol 생성해서 id를 입력받음
+            period: [],
+            images: images,
+          }
+        },
       };
     },
   },
@@ -54,13 +83,18 @@ module.exports = {
 
       console.log("filteredQuestion", filteredQuestion);
 
-      // const asd = Object.values(question).find(
-      //   (question) => question.categoryID == subCategoryID
-      // );
-      // console.log("asd", asd.length);
+      const returnValue = filteredQuestion;
+
+      const returnImages = [];
+
+      filteredQuestion.images.array.forEach(element => {
+        returnImages.push(element);
+      });
+
+      returnValue.images = returnImages;
 
       return {
-        data: filteredQuestion,
+        data: returnValue,
       };
     },
   },
@@ -71,6 +105,7 @@ module.exports = {
     async handler(req, rep) {
       const questionCol = Database.sharedInstance().getCollection("question");
       const question = questionCol["$dataset"];
+
       return {
         data: Object.values(question),
       };
