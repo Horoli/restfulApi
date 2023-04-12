@@ -14,7 +14,6 @@ module.exports = {
 
       const imageIDs = [];
 
-
       if (images.length > 0) {
         for (const image of images) {
           const imageID = Utility.saveImage(image);
@@ -22,16 +21,9 @@ module.exports = {
         }
       }
 
-      console.log('imageIDs.length', imageIDs.length);
-      console.log('imageIDs', imageIDs);
-
-
-
-
       return {
         statusCode: 200,
         data:
-
           questionCol.set(questionID, {
             id: questionID,
             question: question,
@@ -47,7 +39,7 @@ module.exports = {
             // TODO : periodCol 생성해서 id를 입력받음
             period: [],
             // TODO : 이미지(base64String) 저장
-            images: imageIDs,
+            imageIDs: imageIDs,
           }),
         // questionID: {
         //   id: questionID,
@@ -116,21 +108,35 @@ module.exports = {
       // 'src/assets/images'에 저장된 파일 중 해당 uuid를 가진 파일의 내용을 읽어서 base64로 변환 후 리턴
 
       // questions의 question의 imageIDs를 복사해서 copyQuestions에 저장
-      const copyQuestions = JSON.parse(JSON.stringify(questions));
+      // const copyQuestions = { ...questions };
 
-      for (const question of copyQuestions) {
-        const images = [];
-        for (const imageID of question.images) {
-          const image = Utility.getImage(imageID);
-          images.push(image);
-        }
-        question.images = images;
-      }
+      // for (const question of copyQuestions) {
+      //   const images = [];
+      //   // for (const imageID of question.images) {
+      //   //   const image = Utility.getImage(imageID);
+      //   //   images.push(image);
+      //   // }
+      //   // question.images = images;
+
+      //   question.images = question.images.map((image) => {
+      //     return Utility.getImage(image);
+      //   })
+      // }
 
       return {
-        data: copyQuestions,
+        data: questions,
       };
     },
+  },
+  "GET /image/:id": {
+    middlewares: ["auth"],
+    async handler(req, rep) {
+      const { id } = req.params;
+      const imageBase64String = Utility.getImage(id);
+      const imageBuffer = Buffer.from(imageBase64String, "base64");
+      rep.header("Content-Type", "image/png");
+      return imageBuffer
+    }
   },
 
   "PATCH /question": {
@@ -142,11 +148,44 @@ module.exports = {
 
       const getQuestion = questionCol["$dataset"][id];
 
+      const imageIDs = [];
+
+      console.log('getQuestion.imageIDs', getQuestion.imageIDs);
+
+
+      // TODO : 기존에 저장된 이미지가 없고, 새로운 이미지가 없을 때
+      if (images === undefined && getQuestion.imageIDs.length === 0) {
+        imageIDs = getQuestion.imageIDs;
+      }
+
+      // TODO : 기존에 저장된 이미지가 있고, 새로운 이미지가 있을 때
+      if (images !== undefined && getQuestion.imageIDs.length !== 0) {
+
+        // 기존에 저장된 이미지 삭제
+        for (const imageID of getQuestion.imageIDs) {
+          Utility.deleteImage(imageID);
+        }
+
+        for (const image of images) {
+          const imageID = Utility.saveImage(image);
+          imageIDs.push(imageID);
+        }
+      }
+
+      // TODO : 기존에 저장된 이미지가 없고, 새로운 이미지가 있을 때
+      if (images !== undefined && getQuestion.imageIDs.length === 0) {
+        for (const image of images) {
+          const imageID = Utility.saveImage(image);
+          imageIDs.push(imageID);
+        }
+      }
+
+
       getQuestion.question = question;
       getQuestion.answer = answer;
       getQuestion.categoryID = categoryID;
       getQuestion.updatedAt = Date.now();
-      getQuestion.images = images;
+      getQuestion.imageIDs = imageIDs;
 
       return {
         data: "ok",

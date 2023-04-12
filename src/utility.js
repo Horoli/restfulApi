@@ -35,8 +35,12 @@ class Utility {
     }
 
 
-
-
+    static deleteImage(uuid) {
+        const imagePath = `src/assets/images/${uuid}.base64`
+        require('fs').unlink(imagePath, (err) => {
+            console.log('deleteImage err', err);
+        })
+    }
 }
 
 module.exports = Utility
