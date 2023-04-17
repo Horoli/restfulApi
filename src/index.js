@@ -10,7 +10,7 @@ const Fastify = require("fastify");
 const Cors = require("@fastify/cors");
 
 
-class WebServer  {
+class WebServer {
   constructor(opts = {}) {
     this.$opts = opts;
     this.$webServer = Fastify();
@@ -121,10 +121,10 @@ class WebServer  {
     }
   }
 
-  start(){
-    
+  start() {
+
     // TODO : cors header setting
-    this.$webServer.register(Cors, {origin:"*"});
+    this.$webServer.register(Cors, { origin: "*" });
 
     this.$webServer.listen({
       host: this.$opts.host,
