@@ -1,2 +1,4 @@
 database/
+src/assets/images/
 *.db
+*.base64
