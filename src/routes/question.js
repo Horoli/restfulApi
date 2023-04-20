@@ -73,7 +73,6 @@ module.exports = {
 
       const questionValues = Object.values(questionCol["$dataset"]);
 
-      // console.log("question", questionValues);
 
       const filteredQuestion = questionValues.filter(
         (item) => item.categoryID === subCategoryID
@@ -83,13 +82,6 @@ module.exports = {
 
       const returnValue = filteredQuestion;
 
-      const returnImages = [];
-
-      filteredQuestion.images.array.forEach(element => {
-        returnImages.push(element);
-      });
-
-      returnValue.images = returnImages;
 
       return {
         data: returnValue,
@@ -131,7 +123,7 @@ module.exports = {
 
   // image/id를 입력받으면 해당 id를 가져와
   // buffer로 변환 후 return 해줌
-  // 해당 method는 클라이언트에서 image를 활용하는 곳에서만 호출
+  // 해당 method는 클라이언트에서 image를 활용하는 곳에서만
   "GET /image/:id": {
     middlewares: ["auth"],
     async handler(req, rep) {
