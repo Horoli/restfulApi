@@ -58,7 +58,6 @@ module.exports = {
       }
 
       // TODO : 토큰 생성 후 토큰 및 유저정보 DB에 저장
-      // const token = Crypto.randomUUID().replace(/-/g, "");
       const token = Utility.UUID();
       tokensCol.set(token, {
         id,

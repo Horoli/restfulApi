@@ -9,6 +9,14 @@ module.exports = {
       const { question, answer, categoryID, difficulty, score, images, periodID } =
         req.body;
 
+      if (question === '' || answer === '' || categoryID === '') {
+
+        console.log('question', question === '');
+        const error = new Error('paramater is empty')
+        error.status = 400;
+        return error;
+      }
+
       const questionID = Utility.UUID();
       const questionCol = Database.sharedInstance().getCollection("question");
 
@@ -140,6 +148,16 @@ module.exports = {
     async handler(req, rep) {
       const { id, question, answer, categoryID, images } = req.body;
 
+
+
+      if (question === '' || answer === '' || categoryID === '') {
+
+        console.log('question', question === '');
+        const error = new Error('paramater is empty')
+        error.status = 400;
+        return error;
+      }
+
       const questionCol = Database.sharedInstance().getCollection("question");
 
       const getQuestion = questionCol["$dataset"][id];
@@ -184,7 +202,9 @@ module.exports = {
       getQuestion.imageIDs = imageIDs;
 
       return {
-        data: "ok",
+        statusCode: 200,
+        message: "ok",
+        data: getQuestion,
       };
     },
   },
