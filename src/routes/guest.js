@@ -7,7 +7,8 @@ module.exports = {
     async handler(req, rep) {
       const id = req.body.id.replace(/-/g, "");
 
-      if (id.length !== 32) {
+      // if (id.length !== 32) {
+      if (!id.length > 10) {
         const error = new Error("bad id");
         error.status = 400;
         return error;
@@ -44,7 +45,9 @@ module.exports = {
       const guestCol = Database.sharedInstance().getCollection("guest");
       const tokensCol = Database.sharedInstance().getCollection("tokens");
 
-      if (id.length !== 32) {
+      // if (id.length !== 32) {
+
+      if (!id.length > 10) {
         const error = new Error("bad id");
         error.status = 400;
         return error;
