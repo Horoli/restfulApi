@@ -1,20 +1,21 @@
 {
-    "mainCategories": {
-        "ko": "국어",
-        "math": "수학",
-        "social": "사회",
-        "science": "과학",
-        "en": "영어",
-        "music": "음악",
-        "art": "미술",
-        "ethics": "도덕",
-        "physicalEdu": "체육",
-        "practical": "실과"
-    },
-    "difficulty": {
-        "easy": "쉬움",
-        "normal": "보통",
-        "hard": "어려움",
-        "veryHard": "매우 어려움"
-    }
+  "mainCategories": {
+    "general": "총창안",
+    "ko": "국어",
+    "math": "수학",
+    "social": "사회",
+    "science": "과학",
+    "en": "영어",
+    "music": "음악",
+    "art": "미술",
+    "ethics": "도덕",
+    "physicalEdu": "체육",
+    "practical": "실과"
+  },
+  "difficulty": {
+    "easy": "쉬움",
+    "normal": "보통",
+    "hard": "어려움",
+    "veryHard": "매우 어려움"
+  }
 }

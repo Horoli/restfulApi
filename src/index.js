@@ -9,59 +9,58 @@ const Config = require("./config.json");
 const Fastify = require("fastify");
 const Cors = require("@fastify/cors");
 
-
 class WebServer {
   constructor(opts = {}) {
     this.$opts = opts;
     this.$webServer = Fastify();
     this.$middlewares = {};
 
-    this.$_initCSVToJSON();
+    // this.$_initCSVToJSON();
     this.$_initDatabase();
     this.$_initMiddlewares();
     this.$_initRoutes();
   }
 
   // TODO : test, csv to json
-  async $_initCSVToJSON() {
-    // const csvData = await CSVToJSON()
-    //   .fromFile("src/assets/test_csv.csv")
-    //   .then((data) => {
-    //     return data;
-    //   });
+  // async $_initCSVToJSON() {
+  // const csvData = await CSVToJSON()
+  //   .fromFile("src/assets/test_csv.csv")
+  //   .then((data) => {
+  //     return data;
+  //   });
 
-    // const categoryCol = Database.sharedInstance().getCollection("category");
-    // const questionCol = Database.sharedInstance().getCollection("question");
-    // const subCategories = Object.values(categoryCol.get("subCategories"));
+  // const categoryCol = Database.sharedInstance().getCollection("category");
+  // const questionCol = Database.sharedInstance().getCollection("question");
+  // const subCategories = Object.values(categoryCol.get("subCategories"));
 
-    // console.log("subCategories", subCategories);
-    // console.log("questionCol", questionCol);
+  // console.log("subCategories", subCategories);
+  // console.log("questionCol", questionCol);
 
-    // for (const data of csvData) {
-    //   console.log("data", data.subCategory);
-    //   console.log(subCategories.find((item) => item.name == data.subCategory));
+  // for (const data of csvData) {
+  //   console.log("data", data.subCategory);
+  //   console.log(subCategories.find((item) => item.name == data.subCategory));
 
-    //   const getSub = subCategories.find(
-    //     (item) => item.name == data.subCategory
-    //   );
+  //   const getSub = subCategories.find(
+  //     (item) => item.name == data.subCategory
+  //   );
 
-    //   const newID = Utility.UUID(true);
+  //   const newID = Utility.UUID(true);
 
-    //   questionCol.set(newID, {
-    //     id: newID,
-    //     question: data.question,
-    //     answer: data.answer,
-    //     updatedAt: Date.now(),
-    //     createdAt: Date.now(),
-    //     categoryID: getSub.id,
-    //     difficulty: "normal",
-    //     scroe: 3,
-    //     period: [],
-    //   });
-    // }
+  //   questionCol.set(newID, {
+  //     id: newID,
+  //     question: data.question,
+  //     answer: data.answer,
+  //     updatedAt: Date.now(),
+  //     createdAt: Date.now(),
+  //     categoryID: getSub.id,
+  //     difficulty: "normal",
+  //     scroe: 3,
+  //     period: [],
+  //   });
+  // }
 
-    // console.log(subCategories.find((item) => item.name == title));
-  }
+  // console.log(subCategories.find((item) => item.name == title));
+  // }
 
   // TODO : 서버 실행 시 mainCategory의 초기값을 생성
   $_initDatabase() {
@@ -69,7 +68,7 @@ class WebServer {
     const categoryCol = Database.sharedInstance().getCollection("category");
     const difficultyCol = Database.sharedInstance().getCollection("difficulty");
     categoryCol.set("mainCategories", Config.mainCategories);
-    difficultyCol.set("difficulty", Config.difficulty);
+    // difficultyCol.set("difficulty", Config.difficulty);
   }
 
   $_initMiddlewares() {
@@ -122,7 +121,6 @@ class WebServer {
   }
 
   start() {
-
     // TODO : cors header setting
     this.$webServer.register(Cors, { origin: "*" });
 
