@@ -1,6 +1,7 @@
 const Fs = require("fs");
 const Database = require("./datebase");
 const Utility = require("../src/utility");
+const DevMongoDB = require("./mongodb");
 
 const CSVToJSON = require("csvtojson");
 const Path = require("path");
@@ -64,6 +65,14 @@ class WebServer {
 
   // TODO : 서버 실행 시 mainCategory의 초기값을 생성
   $_initDatabase() {
+    // TODO : DEV CODE
+    const initMongoDB = DevMongoDB.sharedInstance().getCollection("DevName");
+
+    initMongoDB.set();
+    initMongoDB.get();
+
+    console.log(initMongoDB);
+
     // Category Initialize
     const categoryCol = Database.sharedInstance().getCollection("category");
     const difficultyCol = Database.sharedInstance().getCollection("difficulty");
