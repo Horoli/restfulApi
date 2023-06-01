@@ -66,12 +66,12 @@ class WebServer {
   // TODO : 서버 실행 시 mainCategory의 초기값을 생성
   $_initDatabase() {
     // TODO : DEV CODE
-    const initMongoDB = DevMongoDB.sharedInstance().getCollection("DevName");
+    // const initMongoDB = DevMongoDB.sharedInstance().getCollection("DevName");
 
-    initMongoDB.set();
-    initMongoDB.get();
+    // initMongoDB.set();
+    // initMongoDB.get();
 
-    console.log(initMongoDB);
+    // console.log(initMongoDB);
 
     // Category Initialize
     const categoryCol = Database.sharedInstance().getCollection("category");

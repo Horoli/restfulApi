@@ -6,7 +6,7 @@ module.exports = {
   "POST /question": {
     middlewares: ["auth"],
     async handler(req, rep) {
-      const { question, answer, categoryID, difficulty, score, images, periodID } =
+      const { question, answer, categoryID, difficulty, score, images, periodID, info, description } =
         req.body;
 
       if (question === '' || answer === '' || categoryID === '') {
@@ -48,6 +48,8 @@ module.exports = {
             period: [],
             // TODO : 이미지(base64String) 저장
             imageIDs: imageIDs,
+            info: info,
+            description: description,
           }),
         // questionID: {
         //   id: questionID,
@@ -146,7 +148,7 @@ module.exports = {
   "PATCH /question": {
     middlewares: ["auth"],
     async handler(req, rep) {
-      const { id, question, answer, categoryID, images } = req.body;
+      const { id, question, answer, categoryID, images, info, description } = req.body;
 
 
 
@@ -162,7 +164,7 @@ module.exports = {
 
       const getQuestion = questionCol["$dataset"][id];
 
-      imageIDs = [];
+      const imageIDs = [];
 
       console.log('getQuestion.imageIDs', getQuestion.imageIDs);
 
@@ -204,12 +206,13 @@ module.exports = {
         }
       }
 
-
       getQuestion.question = question;
       getQuestion.answer = answer;
       getQuestion.categoryID = categoryID;
       getQuestion.updatedAt = Date.now();
       getQuestion.imageIDs = imageIDs;
+      getQuestion.description = description;
+      getQuestion.info = info;
 
       return {
         statusCode: 200,
