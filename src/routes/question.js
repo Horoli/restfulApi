@@ -111,7 +111,6 @@ module.exports = {
     },
   },
 
-  // TODO : amount를 쿼리해서 amount만큼의 문제를 가져옴
   "GET /question": {
     middlewares: ["auth"],
     async handler(req, rep) {
@@ -130,6 +129,8 @@ module.exports = {
       };
     },
   },
+
+  // TODO : /question/random/20을 쿼리하면 20개의 랜덤한 문제를 가져옴 
 
   "GET /question/random/:amount": {
     middlewares: ["auth"],
