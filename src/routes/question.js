@@ -19,6 +19,7 @@ module.exports = {
 
       const questionID = Utility.UUID();
       const questionCol = Database.sharedInstance().getCollection("question");
+      const categoryCol = Database.sharedInstance().getCollection("category");
 
       const imageIDs = [];
 
@@ -28,6 +29,17 @@ module.exports = {
           imageIDs.push(imageID);
         }
       }
+
+      // TODO : Trace Main Category from SubCategory using GraphLookup
+      /**
+       * graphLook 으로 가져온 데이터는 내림차순으로 정렬되어 있음
+       * 따라서 가장 첫 번째에 있는 데이터가 최상위 subCategory이다.
+       **/
+      const rootCategoryId = Utility.getrootCategoryId(categoryID);
+      Utility.addCounter(rootCategoryId, 1);
+
+      // TODO : increase counter
+
 
       return {
         statusCode: 200,
@@ -99,37 +111,45 @@ module.exports = {
     },
   },
 
-  // TODO : object.values만 return(type : list)
+  // TODO : amount를 쿼리해서 amount만큼의 문제를 가져옴
   "GET /question": {
     middlewares: ["auth"],
     async handler(req, rep) {
+      const amount = 20
       const questionCol = Database.sharedInstance().getCollection("question");
       const questions = Object.values(questionCol["$dataset"]);
 
-      // questions에 저장된 question의 imageIDs에 저장된 imageID를 이용해서
-      // 'src/assets/images'에 저장된 파일 중 해당 uuid를 가진 파일의 내용을 읽어서 base64로 변환 후 리턴
+      questions.slice((page - 1) * amount, page * amount)
 
-      // questions의 question의 imageIDs를 복사해서 copyQuestions에 저장
-      // const copyQuestions = { ...questions };
 
-      // for (const question of copyQuestions) {
-      //   const images = [];
-      //   // for (const imageID of question.images) {
-      //   //   const image = Utility.getImage(imageID);
-      //   //   images.push(image);
-      //   // }
-      //   // question.images = images;
+      // TODO : amount만
 
-      //   question.images = question.images.map((image) => {
-      //     return Utility.getImage(image);
-      //   })
-      // }
 
       return {
         data: questions,
       };
     },
   },
+
+  "GET /question/random/:amount": {
+    middlewares: ["auth"],
+    async handler(req, rep) {
+      let amount = req.params.amount;
+      const questionCol = Database.sharedInstance().getCollection("question");
+      const questions = Object.values(questionCol["$dataset"]);
+
+      if (amount > 100)
+        amount = 100
+      else if (amount < 10 || amount === undefined)
+        amount = 10
+
+      return {
+        data: questions.sort(() => Math.random() - 0.5).slice(0, amount),
+      };
+    }
+
+  },
+
 
   // image/id를 입력받으면 해당 id를 가져와
   // buffer로 변환 후 return 해줌

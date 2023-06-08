@@ -1,6 +1,8 @@
 
 const Crypto = require('crypto')
 
+const Database = require('./datebase')
+
 class Utility {
     static UUID(dashless = false) {
         let uuid = Crypto.randomUUID()
@@ -40,6 +42,44 @@ class Utility {
         require('fs').unlink(imagePath, (err) => {
             console.log('deleteImage err', err);
         })
+    }
+
+    static graphLookup(json, id, key) {
+        const firstDock = json[id]
+        if (!firstDock)
+            return undefined
+        if (!firstDock[key])
+            return firstDock
+
+        const stack = [firstDock]
+        while (stack[0][key] !== undefined) {
+            const parentDoc = json[stack[0][key]]
+            if (!parentDoc)
+                break
+
+            stack.unshift(parentDoc)
+        }
+        return stack
+    }
+
+    static getRootCategoryFromChildCategory(id) {
+        const subCategories = Database.sharedInstance().getCollection('category').get('subCategories')
+        const categories = Utility.graphLookup(subCategories, id, 'parent')
+        return categories[0].parent
+    }
+    static getCounter(id) {
+        const counterCol = Database.sharedInstance().getCollection('counter')
+        if (counterCol.get(id) === undefined)
+            counterCol.set(id, 0)
+
+        return counterCol.get(id)
+    }
+    static addCounter(id, value) {
+        const counterCol = Database.sharedInstance().getCollection('counter')
+        if (counterCol.get(id) === undefined)
+            counterCol.set(id, 0)
+
+        counterCol.set(id, counterCol.get(id) + value)
     }
 }
 
