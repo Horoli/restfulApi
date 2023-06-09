@@ -132,23 +132,6 @@ module.exports = {
     },
   },
 
-  // TODO : /question/random/20을 쿼리하면 20개의 랜덤한 문제를 가져옴
-
-  "GET /question/random/:amount": {
-    middlewares: ["auth"],
-    async handler(req, rep) {
-      let amount = req.params.amount;
-      const questionCol = Database.sharedInstance().getCollection("question");
-      const questions = Object.values(questionCol["$dataset"]);
-
-      if (amount > 100) amount = 100;
-      else if (amount < 10 || amount === undefined) amount = 10;
-
-      return {
-        data: questions.sort(() => Math.random() - 0.5).slice(0, amount),
-      };
-    },
-  },
 
   // image/id를 입력받으면 해당 id를 가져와
   // buffer로 변환 후 return 해줌
@@ -235,6 +218,27 @@ module.exports = {
     },
   },
 
+  // TODO : /question/random/20을 쿼리하면 20개의 랜덤한 문제를 가져옴
+  "GET /question/random/:amount": {
+    middlewares: ["auth"],
+    async handler(req, rep) {
+      let amount = req.params.amount;
+
+      console.log('amount', amount);
+      const questionCol = Database.sharedInstance().getCollection("question");
+      const questions = Object.values(questionCol["$dataset"]);
+
+      console.log('questions', questions.length)
+
+      if (amount > 100) amount = 100;
+      else if (amount < 10 || amount === undefined) amount = 10;
+
+      return {
+        data: questions.sort(() => Math.random() - 0.5).slice(0, amount),
+      };
+    },
+  },
+
   // TODO : 클라이언트에서 저장하고 있는 guestId를 쿼리하면
   // 해당 guest에 저장된 wishQuestion에 저장된 questionId를 활용하여
   // questionCol에서 가져와서 리턴해 줌
@@ -247,9 +251,22 @@ module.exports = {
       const questionCol = Database.sharedInstance().getCollection("question");
       const guestInfo = guestCol.get(guestId);
 
+
+
+
       const convertQuestion = guestInfo.wishQuestion.map((e) =>
         questionCol.get(e)
       );
+
+
+      console.log("convertQuestion", convertQuestion.length);
+
+      if (convertQuestion.length === 0) {
+        console.log('is error')
+        const error = new Error("wishQuestion is empty");
+        error.status = 400;
+        return error;
+      }
 
       return {
         data: convertQuestion,
