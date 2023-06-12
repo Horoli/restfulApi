@@ -251,13 +251,9 @@ module.exports = {
       const questionCol = Database.sharedInstance().getCollection("question");
       const guestInfo = guestCol.get(guestId);
 
-
-
-
       const convertQuestion = guestInfo.wishQuestion.map((e) =>
         questionCol.get(e)
       );
-
 
       console.log("convertQuestion", convertQuestion.length);
 
@@ -273,4 +269,48 @@ module.exports = {
       };
     },
   },
+
+  "GET /question/pagination/:page/:count": {
+    middlewares: ["auth"],
+    async handler(req, rep) {
+      let page = parseInt(req.params.page);
+      let showCount = parseInt(req.params.count);
+
+      if (isNaN(page) || page === 0 || isNaN(showCount) || showCount === 0) {
+        const error = new Error();
+        if (isNaN(page)) error.message = "page is NaN";
+        if (page === 0) error.message = "page is 0";
+        if (isNaN(showCount)) error.message = "showCount is NaN";
+        if (showCount === 0) error.message = "showCount is 0";
+        error.status = 400;
+        return error;
+      }
+
+
+      const questionCol = Database.sharedInstance().getCollection("question");
+      const questions = Object.values(questionCol["$dataset"]);
+
+      // console.log('questions', questions.length);
+
+      const lastNum = Math.ceil(questions.length / showCount);
+      // console.log('lastNum', lastNum);
+      const isLast = questions.length < showCount * page;
+
+      if (lastNum < page) {
+        const error = new Error("page is over");
+        error.status = 400;
+        return error;
+      }
+
+      const endNum = isLast ? questions.length : showCount * page;
+      const startNum = isLast ? endNum - questions.length % showCount : endNum - showCount;
+      const returnValue = questions.slice(startNum, endNum);
+      // console.log('returnValue', returnValue.length)
+
+      return {
+        data: returnValue,
+      };
+
+    }
+  }
 };
