@@ -230,7 +230,9 @@ module.exports = {
 
       console.log('questions', questions.length)
 
+      // max value is 100
       if (amount > 100) amount = 100;
+      // min value is 10
       else if (amount < 10 || amount === undefined) amount = 10;
 
       return {
@@ -308,6 +310,7 @@ module.exports = {
       // console.log('returnValue', returnValue.length)
 
       return {
+        questionCount: questions.length,
         data: returnValue,
       };
 
