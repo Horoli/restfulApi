@@ -273,7 +273,7 @@ module.exports = {
   },
 
   "GET /question/pagination/:page/:count": {
-    middlewares: ["auth"],
+    // middlewares: ["auth"],
     async handler(req, rep) {
       let page = parseInt(req.params.page);
       let showCount = parseInt(req.params.count);
@@ -292,13 +292,11 @@ module.exports = {
       const questionCol = Database.sharedInstance().getCollection("question");
       const questions = Object.values(questionCol["$dataset"]);
 
-      // console.log('questions', questions.length);
-
-      const lastNum = Math.ceil(questions.length / showCount);
-      // console.log('lastNum', lastNum);
+      // 
+      const maxPage = Math.ceil(questions.length / showCount);
       const isLast = questions.length < showCount * page;
 
-      if (lastNum < page) {
+      if (maxPage < page) {
         const error = new Error("page is over");
         error.status = 400;
         return error;
@@ -307,10 +305,11 @@ module.exports = {
       const endNum = isLast ? questions.length : showCount * page;
       const startNum = isLast ? endNum - questions.length % showCount : endNum - showCount;
       const returnValue = questions.slice(startNum, endNum);
-      // console.log('returnValue', returnValue.length)
 
       return {
-        questionCount: questions.length,
+        maxPage: maxPage,
+        totalValueCount: questions.length,
+        getValueCount: endNum - startNum,
         data: returnValue,
       };
 
