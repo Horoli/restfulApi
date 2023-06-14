@@ -273,7 +273,7 @@ module.exports = {
   },
 
   "GET /question/pagination/:page/:count": {
-    // middlewares: ["auth"],
+    middlewares: ["auth"],
     async handler(req, rep) {
       let page = parseInt(req.params.page);
       let showCount = parseInt(req.params.count);
@@ -305,6 +305,7 @@ module.exports = {
       const endNum = isLast ? questions.length : showCount * page;
       const startNum = isLast ? endNum - questions.length % showCount : endNum - showCount;
       const returnValue = questions.slice(startNum, endNum);
+
 
       return {
         maxPage: maxPage,
