@@ -79,7 +79,7 @@ class WebServer {
 
     // counterCol이 없으면 생성하고 모든 카테고리를 생성하고 0을 set
     if (counterCol.get('counter') === undefined) {
-      Config.counter.forEach((item) => {
+      Object.keys(Config.mainCategories).forEach((item) => {
         counterCol.set(item, 0)
       })
     }

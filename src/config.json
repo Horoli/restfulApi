@@ -17,18 +17,5 @@
     "normal": "보통",
     "hard": "어려움",
     "veryHard": "매우 어려움"
-  },
-  "counter": [
-    "general",
-    "ko",
-    "math",
-    "social",
-    "science",
-    "en",
-    "music",
-    "art",
-    "ethics",
-    "physicalEdu",
-    "practical"
-  ]
+  }
 }
