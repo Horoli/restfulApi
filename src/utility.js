@@ -76,6 +76,7 @@ class Utility {
     }
     static addCounter(id, value) {
         const counterCol = Database.sharedInstance().getCollection('counter')
+        console.log('addCounter', counterCol);
         if (counterCol.get(id) === undefined)
             counterCol.set(id, 0)
 

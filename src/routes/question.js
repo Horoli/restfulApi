@@ -47,8 +47,6 @@ module.exports = {
         Utility.getRootCategoryFromChildCategory(categoryID);
       Utility.addCounter(rootCategoryId, 1);
 
-      // TODO : increase counter
-
       return {
         statusCode: 200,
         data: questionCol.set(questionID, {
@@ -70,22 +68,6 @@ module.exports = {
           info: info,
           description: description,
         }),
-        // questionID: {
-        //   id: questionID,
-        //   question: question,
-        //   answer: answer,
-        //   updatedAt: Date.now(),
-        //   createdAt: Date.now(),
-        //   // TODO : categoryId는 children이 없는 categoryId를 받아야함.
-        //   // children이 있는 id를 받으면 error
-        //   categoryID: categoryID,
-        //   // TODO : difficultyCol 생성 후 클라이언트에서 선택한 difficulty를 입력할 수 있도록 해야함
-        //   difficulty: difficulty,
-        //   score: score,
-        //   // TODO : periodCol 생성해서 id를 입력받음
-        //   period: [],
-        //   images: images,
-        // }
       };
     },
   },
@@ -167,9 +149,7 @@ module.exports = {
       const imageIDs = [];
 
       console.log("getQuestion.imageIDs", getQuestion.imageIDs);
-
       console.log(getQuestion.imageIDs.length);
-
       console.log("images.length", images.length);
 
       // TODO : 기존에 저장된 이미지가 있고, 새로운 이미지가 없을 때
@@ -202,6 +182,14 @@ module.exports = {
         }
       }
 
+      if (getQuestion.categoryID !== categoryID) {
+        console.log('categoryID is changed');
+        const rootCategoryId = Utility.getRootCategoryFromChildCategory(getQuestion.categoryID);
+        Utility.addCounter(rootCategoryId, -1);
+        const newRootCategoryId = Utility.getRootCategoryFromChildCategory(categoryID);
+        Utility.addCounter(newRootCategoryId, 1);
+      }
+
       getQuestion.question = question;
       getQuestion.answer = answer;
       getQuestion.categoryID = categoryID;
@@ -216,6 +204,22 @@ module.exports = {
         data: getQuestion,
       };
     },
+  },
+
+  "GET /question/counter": {
+    middlewares: ["auth"],
+    async handler(req, rep) {
+      const questionCol = Database.sharedInstance().getCollection("question");
+      const counterCol = Database.sharedInstance().getCollection("counter");
+      const questions = Object.values(questionCol["$dataset"]);
+      const counter = counterCol["$dataset"];
+
+      console.log('counter', counter);
+      return {
+        totalQuestionCount: questions.length,
+        data: counter,
+      }
+    }
   },
 
   // TODO : /question/random/20을 쿼리하면 20개의 랜덤한 문제를 가져옴
@@ -236,6 +240,7 @@ module.exports = {
       else if (amount < 10 || amount === undefined) amount = 10;
 
       return {
+        totalQuestionCount: questions.length,
         data: questions.sort(() => Math.random() - 0.5).slice(0, amount),
       };
     },
@@ -309,8 +314,8 @@ module.exports = {
 
       return {
         maxPage: maxPage,
-        totalValueCount: questions.length,
-        getValueCount: endNum - startNum,
+        totalQuestionCount: questions.length,
+        getQuestionCount: endNum - startNum,
         data: returnValue,
       };
 

@@ -74,10 +74,17 @@ class WebServer {
     // console.log(initMongoDB);
 
     // Category Initialize
+    const counterCol = Database.sharedInstance().getCollection("counter");
     const categoryCol = Database.sharedInstance().getCollection("category");
-    const difficultyCol = Database.sharedInstance().getCollection("difficulty");
+
+    // counterCol이 없으면 생성하고 모든 카테고리를 생성하고 0을 set
+    if (counterCol.get('counter') === undefined) {
+      Config.counter.forEach((item) => {
+        counterCol.set(item, 0)
+      })
+    }
+
     categoryCol.set("mainCategories", Config.mainCategories);
-    // difficultyCol.set("difficulty", Config.difficulty);
   }
 
   $_initMiddlewares() {
