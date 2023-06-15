@@ -1,4 +1,6 @@
 const Database = require("../datebase");
+
+const Config = require("../config.json");
 const Utility = require("../utility");
 
 module.exports = {
@@ -258,59 +260,95 @@ module.exports = {
       const questionCol = Database.sharedInstance().getCollection("question");
       const guestInfo = guestCol.get(guestId);
 
-      const convertQuestion = guestInfo.wishQuestion.map((e) =>
+      const getQuestion = guestInfo.wishQuestion.map((e) =>
         questionCol.get(e)
       );
 
-      console.log("convertQuestion", convertQuestion.length);
+      console.log("convertQuestion", getQuestion.length);
 
-      if (convertQuestion.length === 0) {
-        console.log('is error')
+      if (getQuestion.length === 0) {
         const error = new Error("wishQuestion is empty");
         error.status = 400;
         return error;
       }
 
       return {
-        data: convertQuestion,
+        data: getQuestion,
       };
     },
   },
 
-  "GET /question/pagination/:page/:count": {
+  "GET /question/wish/by_subject": {
     middlewares: ["auth"],
     async handler(req, rep) {
-      let page = parseInt(req.params.page);
-      let showCount = parseInt(req.params.count);
+      const guestId = req.token.id;
 
-      if (isNaN(page) || page === 0 || isNaN(showCount) || showCount === 0) {
+      const guestCol = Database.sharedInstance().getCollection("guest");
+      const questionCol = Database.sharedInstance().getCollection("question");
+      const categoryCol = Database.sharedInstance().getCollection("category");
+      const categories = categoryCol.get("subCategories");
+
+      const guestInfo = guestCol.get(guestId);
+
+      // TODO : 
+      const mapOfWish = {};
+      Object.keys(Config.mainCategories).forEach((e) => mapOfWish[e] = []);
+
+      const getQuestion = guestInfo.wishQuestion.map((e) =>
+        questionCol.get(e)
+      );
+
+      getQuestion.map((question) => {
+
+        // TODO : question depth 추가 시 활용
+        // const rootCategoryId =
+        //   Utility.getRootCategoryFromChildCategory(question.categoryID);
+        // console.log('rootCategoryId', rootCategoryId);
+
+        const category = categories[question.categoryID];
+        mapOfWish[category.parent].push(question);
+      })
+
+      console.log("mapOfWish", mapOfWish);
+
+      return {
+        data: mapOfWish
+      }
+
+    }
+  },
+
+  "GET /question/pagination/:selectedPage/:showCount": {
+    middlewares: ["auth"],
+    async handler(req, rep) {
+      let selectedPage = parseInt(req.params.selectedPage);
+      let showCount = parseInt(req.params.showCount);
+
+      if (isNaN(selectedPage) || selectedPage === 0 || isNaN(showCount) || showCount === 0) {
         const error = new Error();
-        if (isNaN(page)) error.message = "page is NaN";
-        if (page === 0) error.message = "page is 0";
+        if (isNaN(selectedPage)) error.message = "page is NaN";
+        if (selectedPage === 0) error.message = "page is 0";
         if (isNaN(showCount)) error.message = "showCount is NaN";
         if (showCount === 0) error.message = "showCount is 0";
         error.status = 400;
         return error;
       }
 
-
       const questionCol = Database.sharedInstance().getCollection("question");
       const questions = Object.values(questionCol["$dataset"]);
 
-      // 
       const maxPage = Math.ceil(questions.length / showCount);
-      const isLast = questions.length < showCount * page;
+      const isLast = questions.length < showCount * selectedPage;
 
-      if (maxPage < page) {
+      if (maxPage < selectedPage) {
         const error = new Error("page is over");
         error.status = 400;
         return error;
       }
 
-      const endNum = isLast ? questions.length : showCount * page;
+      const endNum = isLast ? questions.length : showCount * selectedPage;
       const startNum = isLast ? endNum - questions.length % showCount : endNum - showCount;
       const returnValue = questions.slice(startNum, endNum);
-
 
       return {
         maxPage: maxPage,

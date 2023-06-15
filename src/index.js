@@ -38,7 +38,9 @@ class WebServer {
     const categoryCol = Database.sharedInstance().getCollection("category");
 
     // counterCol이 없으면 생성하고 모든 카테고리를 생성하고 0을 set
-    if (counterCol.get('counter') === undefined) {
+
+
+    if (counterCol.get('general') === undefined) {
       Object.keys(Config.mainCategories).forEach((item) => {
         counterCol.set(item, 0)
       })
