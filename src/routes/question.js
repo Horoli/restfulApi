@@ -218,15 +218,12 @@ module.exports = {
       const questions = Object.values(questionCol["$dataset"]);
       const counter = counterCol["$dataset"];
 
-      const asd = { totalQuestionCount: questions.length };
+      const totalQuestionCount = { totalQuestionCount: questions.length };
 
-      const mergeCounter = Object.assign(counter, asd);
+      const mergeCounter = Object.assign(counter, totalQuestionCount);
 
-      console.log("counter", counter);
       return {
-        totalQuestionCount: questions.length,
         data: mergeCounter,
-        // data: counter,
       };
     },
   },
