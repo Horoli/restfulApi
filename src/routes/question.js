@@ -220,7 +220,7 @@ module.exports = {
 
       const totalQuestionCount = { totalQuestionCount: questions.length };
 
-      const mergeCounter = Object.assign(counter, totalQuestionCount);
+      const mergeCounter = Object.assign(totalQuestionCount, counter);
 
       return {
         data: mergeCounter,
