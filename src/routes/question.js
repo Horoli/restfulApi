@@ -116,7 +116,6 @@ module.exports = {
     },
   },
 
-
   // image/id를 입력받으면 해당 id를 가져와
   // buffer로 변환 후 return 해줌
   // 해당 method는 클라이언트에서 image를 활용하는 곳에서만
@@ -185,10 +184,13 @@ module.exports = {
       }
 
       if (getQuestion.categoryID !== categoryID) {
-        console.log('categoryID is changed');
-        const rootCategoryId = Utility.getRootCategoryFromChildCategory(getQuestion.categoryID);
+        console.log("categoryID is changed");
+        const rootCategoryId = Utility.getRootCategoryFromChildCategory(
+          getQuestion.categoryID
+        );
         Utility.addCounter(rootCategoryId, -1);
-        const newRootCategoryId = Utility.getRootCategoryFromChildCategory(categoryID);
+        const newRootCategoryId =
+          Utility.getRootCategoryFromChildCategory(categoryID);
         Utility.addCounter(newRootCategoryId, 1);
       }
 
@@ -216,12 +218,17 @@ module.exports = {
       const questions = Object.values(questionCol["$dataset"]);
       const counter = counterCol["$dataset"];
 
-      console.log('counter', counter);
+      const asd = { totalQuestionCount: questions.length };
+
+      const mergeCounter = Object.assign(counter, asd);
+
+      console.log("counter", counter);
       return {
         totalQuestionCount: questions.length,
-        data: counter,
-      }
-    }
+        data: mergeCounter,
+        // data: counter,
+      };
+    },
   },
 
   // TODO : /question/random/20을 쿼리하면 20개의 랜덤한 문제를 가져옴
@@ -230,11 +237,11 @@ module.exports = {
     async handler(req, rep) {
       let amount = req.params.amount;
 
-      console.log('amount', amount);
+      console.log("amount", amount);
       const questionCol = Database.sharedInstance().getCollection("question");
       const questions = Object.values(questionCol["$dataset"]);
 
-      console.log('questions', questions.length)
+      console.log("questions", questions.length);
 
       // max value is 100
       if (amount > 100) amount = 100;
@@ -260,9 +267,7 @@ module.exports = {
       const questionCol = Database.sharedInstance().getCollection("question");
       const guestInfo = guestCol.get(guestId);
 
-      const getQuestion = guestInfo.wishQuestion.map((e) =>
-        questionCol.get(e)
-      );
+      const getQuestion = guestInfo.wishQuestion.map((e) => questionCol.get(e));
 
       console.log("convertQuestion", getQuestion.length);
 
@@ -290,16 +295,13 @@ module.exports = {
 
       const guestInfo = guestCol.get(guestId);
 
-      // TODO : 
+      // TODO :
       const mapOfWish = {};
-      Object.keys(Config.mainCategories).forEach((e) => mapOfWish[e] = []);
+      Object.keys(Config.mainCategories).forEach((e) => (mapOfWish[e] = []));
 
-      const getQuestion = guestInfo.wishQuestion.map((e) =>
-        questionCol.get(e)
-      );
+      const getQuestion = guestInfo.wishQuestion.map((e) => questionCol.get(e));
 
       getQuestion.map((question) => {
-
         // TODO : question depth 추가 시 활용
         // const rootCategoryId =
         //   Utility.getRootCategoryFromChildCategory(question.categoryID);
@@ -307,15 +309,14 @@ module.exports = {
 
         const category = categories[question.categoryID];
         mapOfWish[category.parent].push(question);
-      })
+      });
 
       console.log("mapOfWish", mapOfWish);
 
       return {
-        data: mapOfWish
-      }
-
-    }
+        data: mapOfWish,
+      };
+    },
   },
 
   "GET /question/pagination/:selectedPage/:showCount": {
@@ -324,7 +325,12 @@ module.exports = {
       let selectedPage = parseInt(req.params.selectedPage);
       let showCount = parseInt(req.params.showCount);
 
-      if (isNaN(selectedPage) || selectedPage === 0 || isNaN(showCount) || showCount === 0) {
+      if (
+        isNaN(selectedPage) ||
+        selectedPage === 0 ||
+        isNaN(showCount) ||
+        showCount === 0
+      ) {
         const error = new Error();
         if (isNaN(selectedPage)) error.message = "page is NaN";
         if (selectedPage === 0) error.message = "page is 0";
@@ -347,7 +353,9 @@ module.exports = {
       }
 
       const endNum = isLast ? questions.length : showCount * selectedPage;
-      const startNum = isLast ? endNum - questions.length % showCount : endNum - showCount;
+      const startNum = isLast
+        ? endNum - (questions.length % showCount)
+        : endNum - showCount;
       const returnValue = questions.slice(startNum, endNum);
 
       return {
@@ -356,7 +364,6 @@ module.exports = {
         getQuestionCount: endNum - startNum,
         data: returnValue,
       };
-
-    }
-  }
+    },
+  },
 };
