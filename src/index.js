@@ -47,6 +47,33 @@ class WebServer {
     }
 
     categoryCol.set("mainCategories", Config.mainCategories);
+
+
+
+    // TODO : subCategories가 없으면 생성
+    // mainCategories에 Config.subCategories를 추가하는 기능
+    if (categoryCol.get("subCategories") === undefined) {
+      for (const [mainKey, value] of Object.entries(Config.mainCategories)) {
+        console.log('key', mainKey);
+
+        for (const subValue of Config.subCategories) {
+
+          const categoryModel = {
+            id: Utility.UUID(true),
+            parent: mainKey,
+            children: [],
+            name: subValue,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+          }
+
+          categoryCol.set(`subCategories.${categoryModel.id}`, categoryModel);
+        }
+      }
+    }
+
+
+
   }
 
   $_initMiddlewares() {

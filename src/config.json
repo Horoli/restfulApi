@@ -12,6 +12,10 @@
     "physicalEdu": "체육",
     "practical": "실과"
   },
+  "subCategories": [
+    "기본이론",
+    "모형"
+  ],
   "difficulty": {
     "easy": "쉬움",
     "normal": "보통",
