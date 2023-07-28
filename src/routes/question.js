@@ -149,14 +149,15 @@ module.exports = {
 
       const imageIDs = [];
 
-      console.log("getQuestion.imageIDs", getQuestion.imageIDs);
-      console.log(getQuestion.imageIDs.length);
-      console.log("images.length", images.length);
+      // console.log("getQuestion.imageIDs", getQuestion.imageIDs);
+      // console.log(getQuestion.imageIDs.length);
+      // console.log("images.length", images.length);
 
       // TODO : 기존에 저장된 이미지가 있고, 새로운 이미지가 없을 때
       if (images.length === 0 && getQuestion.imageIDs.length !== 0) {
-        // console.log('image step1');
-        imageIDs = getQuestion.imageIDs;
+        for (const imageID of getQuestion.imageIDs) {
+          imageIDs.push(imageID);
+        }
       }
 
       // TODO : 기존에 저장된 이미지가 있고, 새로운 이미지가 있을 때
