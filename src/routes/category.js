@@ -1,20 +1,25 @@
 const Database = require("../datebase");
 const Utility = require("../utility");
 
-// const Symbols = {
-//   type: Symbol("type"),
-// }
-
 module.exports = {
   "GET /category": {
     middlewares: ["auth"],
     async handler(req, rep) {
-      const { id } = req.query;
+      const { parent, id } = req.query;
 
       const categoryCol = Database.sharedInstance().getCollection("category");
+      console.log("id", id === undefined);
+      console.log("parent", parent === undefined);
 
-      // TODO : 입력된 id가 없으면 mainCategories를 return
-      if (id === undefined) {
+      if (id !== undefined && parent === undefined) {
+        return {
+          status: 200,
+          data: categoryCol.get("subCategories")[id],
+        };
+      }
+
+      // TODO : 입력된 parent가 없으면 mainCategories를 return
+      if (parent === undefined && id == undefined) {
         return {
           status: 200,
           data: categoryCol.get("mainCategories"),
@@ -22,13 +27,14 @@ module.exports = {
       }
 
       const subCategory = Object.values(categoryCol.get("subCategories") ?? {});
-      console.log("subCategory", subCategory);
+      // console.log("subCategory", subCategory);
       return {
         status: 200,
-        data: subCategory.filter((category) => category.parent === id),
+        data: subCategory.filter((category) => category.parent === parent),
       };
     },
   },
+
   // TODO : subCategoryCol에 있는 모든 데이터를 가져옴
   "GET /subcategory": {
     middlewares: ["auth"],
