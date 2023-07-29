@@ -73,28 +73,51 @@ module.exports = {
       };
     },
   },
+  // "GET /filtered_questions": {
+  //   middlewares: ["auth"],
+  //   async handler(req, rep) {
+  //     const { ids } = req.query;
 
-  "POST /filteredquestion": {
+  //     console.log(ids);
+  //   },
+  // },
+
+  "POST /filtered_question": {
     middlewares: ["auth"],
     async handler(req, rep) {
-      const { subCategoryID } = req.body;
-      console.log("subCategoryID", subCategoryID);
+      const { subCategoryIds } = req.body;
+      console.log("subCategoryIds", subCategoryIds);
 
       const categoryCol = Database.sharedInstance().getCollection("category");
       const questionCol = Database.sharedInstance().getCollection("question");
 
       const questionValues = Object.values(questionCol["$dataset"]);
 
-      const filteredQuestion = questionValues.filter(
-        (item) => item.categoryID === subCategoryID
-      );
+      const tmpData = [];
 
-      console.log("filteredQuestion", filteredQuestion);
+      // 입력받은 subCategoryIds를 tmpData로 추출
+      subCategoryIds.forEach((e) => {
+        const filteredData = questionValues.filter(
+          (item) => item.categoryID === e
+        );
 
-      const returnValue = filteredQuestion;
+        if (filteredData.length !== 0) {
+          filteredData.forEach((e) => tmpData.push(e));
+        }
+      });
+
+      console.log("tmpData", tmpData);
+
+      // const filteredQuestion = questionValues.filter(
+      //   (item) => item.categoryID === subCategoryID
+      // );
+
+      // console.log("filteredQuestion", filteredQuestion);
+
+      // const returnValue = filteredQuestion;
 
       return {
-        data: returnValue,
+        data: tmpData,
       };
     },
   },
