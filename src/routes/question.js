@@ -313,23 +313,27 @@ module.exports = {
       const questionCol = Database.sharedInstance().getCollection("question");
       const categoryCol = Database.sharedInstance().getCollection("category");
       const categories = categoryCol.get("subCategories");
-
       const guestInfo = guestCol.get(guestId);
 
       // TODO :
       const mapOfWish = {};
       Object.keys(Config.mainCategories).forEach((e) => (mapOfWish[e] = []));
 
+      console.log("mapOfWish", mapOfWish);
+
       const getQuestion = guestInfo.wishQuestion.map((e) => questionCol.get(e));
 
       getQuestion.map((question) => {
         // TODO : question depth 추가 시 활용
-        // const rootCategoryId =
-        //   Utility.getRootCategoryFromChildCategory(question.categoryID);
-        // console.log('rootCategoryId', rootCategoryId);
+        const rootCategoryId = Utility.getRootCategoryFromChildCategory(
+          question.categoryID
+        );
+        console.log("rootCategoryId", rootCategoryId);
 
-        const category = categories[question.categoryID];
-        mapOfWish[category.parent].push(question);
+        mapOfWish[rootCategoryId].push(question);
+
+        // const category = categories[question.categoryID];
+        // mapOfWish[category.parent].push(question);
       });
 
       console.log("mapOfWish", mapOfWish);
