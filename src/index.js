@@ -9,6 +9,7 @@ const Config = require("./config.json");
 
 const Fastify = require("fastify");
 const Cors = require("@fastify/cors");
+const MongoDB = require("./mongodb");
 
 class WebServer {
   constructor(opts = {}) {
@@ -20,19 +21,25 @@ class WebServer {
     this.$_initDatabase();
     this.$_initMiddlewares();
     this.$_initRoutes();
+    this.$_initMongoDB();
   }
 
+  // TODO : DEV CODE, mongoDB test
+  async $_initMongoDB() {
+    const asd = MongoDB.sharedInstance();
+    await asd.connect({
+      host: "127.0.0.1",
+      port: 27017,
+      db: "admin",
+    });
+
+    // console.log(asd);
+
+    // console.log(asd);
+  }
 
   // TODO : 서버 실행 시 mainCategory의 초기값을 생성
   $_initDatabase() {
-    // TODO : DEV CODE
-    // const initMongoDB = DevMongoDB.sharedInstance().getCollection("DevName");
-
-    // initMongoDB.set();
-    // initMongoDB.get();
-
-    // console.log(initMongoDB);
-
     // Category Initialize
     const counterCol = Database.sharedInstance().getCollection("counter");
     const categoryCol = Database.sharedInstance().getCollection("category");
@@ -40,24 +47,21 @@ class WebServer {
     // console.log('counterCol.get()', counterCol.get('ko'));
 
     // counterCol이 없으면 생성하고 모든 카테고리를 생성하고 0을 set
-    if (counterCol.get('ko') === undefined) {
+    if (counterCol.get("ko") === undefined) {
       Object.keys(Config.mainCategories).forEach((item) => {
-        counterCol.set(item, 0)
-      })
+        counterCol.set(item, 0);
+      });
     }
 
     categoryCol.set("mainCategories", Config.mainCategories);
-
-
 
     // TODO : subCategories가 없으면 생성
     // mainCategories에 Config.subCategories를 추가하는 기능
     if (categoryCol.get("subCategories") === undefined) {
       for (const [mainKey, value] of Object.entries(Config.mainCategories)) {
-        console.log('key', mainKey);
+        console.log("key", mainKey);
 
         for (const subValue of Config.subCategories) {
-
           const categoryModel = {
             id: Utility.UUID(true),
             parent: mainKey,
@@ -65,15 +69,12 @@ class WebServer {
             name: subValue,
             createdAt: Date.now(),
             updatedAt: Date.now(),
-          }
+          };
 
           categoryCol.set(`subCategories.${categoryModel.id}`, categoryModel);
         }
       }
     }
-
-
-
   }
 
   $_initMiddlewares() {
@@ -140,44 +141,43 @@ class WebServer {
 
 module.exports = WebServer;
 
+// TODO : test, csv to json
+// async $_initCSVToJSON() {
+// const csvData = await CSVToJSON()
+//   .fromFile("src/assets/test_csv.csv")
+//   .then((data) => {
+//     return data;
+//   });
 
-  // TODO : test, csv to json
-  // async $_initCSVToJSON() {
-  // const csvData = await CSVToJSON()
-  //   .fromFile("src/assets/test_csv.csv")
-  //   .then((data) => {
-  //     return data;
-  //   });
+// const categoryCol = Database.sharedInstance().getCollection("category");
+// const questionCol = Database.sharedInstance().getCollection("question");
+// const subCategories = Object.values(categoryCol.get("subCategories"));
 
-  // const categoryCol = Database.sharedInstance().getCollection("category");
-  // const questionCol = Database.sharedInstance().getCollection("question");
-  // const subCategories = Object.values(categoryCol.get("subCategories"));
+// console.log("subCategories", subCategories);
+// console.log("questionCol", questionCol);
 
-  // console.log("subCategories", subCategories);
-  // console.log("questionCol", questionCol);
+// for (const data of csvData) {
+//   console.log("data", data.subCategory);
+//   console.log(subCategories.find((item) => item.name == data.subCategory));
 
-  // for (const data of csvData) {
-  //   console.log("data", data.subCategory);
-  //   console.log(subCategories.find((item) => item.name == data.subCategory));
+//   const getSub = subCategories.find(
+//     (item) => item.name == data.subCategory
+//   );
 
-  //   const getSub = subCategories.find(
-  //     (item) => item.name == data.subCategory
-  //   );
+//   const newID = Utility.UUID(true);
 
-  //   const newID = Utility.UUID(true);
+//   questionCol.set(newID, {
+//     id: newID,
+//     question: data.question,
+//     answer: data.answer,
+//     updatedAt: Date.now(),
+//     createdAt: Date.now(),
+//     categoryID: getSub.id,
+//     difficulty: "normal",
+//     scroe: 3,
+//     period: [],
+//   });
+// }
 
-  //   questionCol.set(newID, {
-  //     id: newID,
-  //     question: data.question,
-  //     answer: data.answer,
-  //     updatedAt: Date.now(),
-  //     createdAt: Date.now(),
-  //     categoryID: getSub.id,
-  //     difficulty: "normal",
-  //     scroe: 3,
-  //     period: [],
-  //   });
-  // }
-
-  // console.log(subCategories.find((item) => item.name == title));
-  // }
+// console.log(subCategories.find((item) => item.name == title));
+// }
