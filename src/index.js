@@ -24,18 +24,25 @@ class WebServer {
     this.$_initMongoDB();
   }
 
+
   // TODO : DEV CODE, mongoDB test
   async $_initMongoDB() {
-    const asd = MongoDB.sharedInstance();
-    await asd.connect({
-      host: "127.0.0.1",
+    const dbName = "test_db";
+    const mongoDB = await MongoDB.sharedInstance();
+
+    await mongoDB.connect({
+      host: "172.16.0.6",
       port: 27017,
-      db: "admin",
+      db: dbName,
     });
 
-    // console.log(asd);
+    const categories = await mongoDB.getCollection("categories");
 
-    // console.log(asd);
+    if (categories.count() === 0) {
+      await categories.insertOne({ mainCategories: Config.mainCategories });
+    }
+
+    console.log(await categories.find().toArray());
   }
 
   // TODO : 서버 실행 시 mainCategory의 초기값을 생성

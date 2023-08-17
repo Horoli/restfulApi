@@ -3,23 +3,12 @@ const MongoDB = require("../mongodb");
 module.exports = {
   "GET /mongo_test": {
     async handler(req, rep) {
-      //   const asd = MongoDB.getCollection("test");
-      //   console.log(MongoDB);
-      const asd = MongoDB.getCollection("ddd");
-      const zxc = await asd.find().toArray();
+      const mainCategories = await MongoDB.getCollection("mainCategories");
+      const insert = await mainCategories.insertOne({ zzz: "zzzz" });
+      const find = await mainCategories.find().toArray();
+      console.log(find);
 
-      console.log(zxc);
 
-      //   console.log(asd);
-      //   console.log(asd);
-      //   console.log("asd", asd);
-
-      //   asd.find(function (error, asd) {
-      //     console.log("readAll");
-      //     if (error) {
-      //       console.log("error", error);
-      //     }
-      //   });
 
       return {
         status: 200,
