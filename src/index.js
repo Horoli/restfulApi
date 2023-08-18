@@ -20,8 +20,8 @@ class WebServer {
     // this.$_initCSVToJSON();
     this.$_initDatabase();
     this.$_initMiddlewares();
-    this.$_initRoutes();
     this.$_initMongoDB();
+    this.$_initRoutes();
   }
 
   // TODO : DEV CODE, mongoDB test
@@ -35,13 +35,18 @@ class WebServer {
       db: dbName,
     });
 
-    // const categories = await mongoDB.getCollection("category");
     const mainCategories = await mongoDB.getCollection("mainCategory");
     const subCategories = await mongoDB.getCollection("subCategory");
-    // const tmpSubCategories = {};
+    const counterCol = await mongoDB.getCollection("counter");
 
-    if ((await mainCategories.count()) === 0) {
-      for await (const mainKey of Object.keys(Config.mainCategories)) {
+    if (
+      (await mainCategories.count()) === 0 ||
+      (await subCategories.count()) === 0 ||
+      (await counterCol.count()) === 0
+    ) {
+      for (const [mainKey, mainValue] of Object.entries(
+        Config.mainCategories
+      )) {
         for (const subValue of Config.subCategories) {
           const categoryModel = {
             id: Utility.UUID(true),
@@ -54,9 +59,14 @@ class WebServer {
 
           await subCategories.insertOne(categoryModel);
         }
+        counterCol.insertOne({ key: mainKey, counter: 0 });
+        mainCategories.insertOne({
+          key: mainKey,
+          value: mainValue,
+        });
       }
 
-      await mainCategories.insertOne(Config.mainCategories);
+      // await mainCategories.insertOne(Config.mainCategories);
     }
   }
 
