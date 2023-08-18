@@ -34,13 +34,7 @@ module.exports = {
         return error;
       }
 
-      // const mainCategoryCol = await MongoDB.getCollection("mainCategory");
-      // const mainCategories = await mainCategoryCol.findOne();
-
       const subCategoryCol = await MongoDB.getCollection("subCategory");
-      const subCategories = await subCategoryCol.find({ parent: parent }).toArray();
-
-      // console.log('subCategories', subCategories);
 
       const categoryModel = {
         id: Utility.UUID(true),
