@@ -24,7 +24,6 @@ class WebServer {
     this.$_initMongoDB();
   }
 
-
   // TODO : DEV CODE, mongoDB test
   async $_initMongoDB() {
     const dbName = "test_db";
@@ -36,13 +35,30 @@ class WebServer {
       db: dbName,
     });
 
-    const categories = await mongoDB.getCollection("categories");
+    const categories = await mongoDB.getCollection("category");
+    const tmpSubCategories = {};
 
-    if (categories.count() === 0) {
-      await categories.insertOne({ mainCategories: Config.mainCategories });
+    if ((await categories.count()) === 0) {
+      for await (const mainKey of Object.keys(Config.mainCategories)) {
+        for (const subValue of Config.subCategories) {
+          const categoryModel = {
+            id: Utility.UUID(true),
+            parent: mainKey,
+            children: [],
+            name: subValue,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+          };
+
+          tmpSubCategories[categoryModel.id] = categoryModel;
+        }
+      }
+
+      await categories.insertMany([
+        { mainCategories: Config.mainCategories },
+        { subCategories: tmpSubCategories },
+      ]);
     }
-
-    console.log(await categories.find().toArray());
   }
 
   // TODO : 서버 실행 시 mainCategory의 초기값을 생성

@@ -38,22 +38,18 @@ class MongoDB {
     return this.$mongoConnection.db(name);
   }
   async getCollection(name) {
-    const getCollectionsList = await this.getDatabase().listCollections().toArray();
+    const getCollectionsList = await this.getDatabase()
+      .listCollections()
+      .toArray();
 
     if (getCollectionsList.length === 0) {
-      console.log(`getCollectionsList is undefined`);
-      console.log('getCollectionsList', getCollectionsList);
+      console.log(`getCollectionsList ${name} is undefined`);
+      console.log("getCollectionsList", getCollectionsList);
       await this.getDatabase().createCollection(name);
       return this.getDatabase().collection(name);
     }
     return this.getDatabase().collection(name);
   }
-
-  // async insert(data) {
-  //   return this.getDatabase().insert(data);
-  // }
-
-
 
   static sharedInstance() {
     if (!MongoDB.__instance) MongoDB.__instance = new MongoDB();
