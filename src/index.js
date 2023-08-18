@@ -35,10 +35,12 @@ class WebServer {
       db: dbName,
     });
 
-    const categories = await mongoDB.getCollection("category");
-    const tmpSubCategories = {};
+    // const categories = await mongoDB.getCollection("category");
+    const mainCategories = await mongoDB.getCollection("mainCategory");
+    const subCategories = await mongoDB.getCollection("subCategory");
+    // const tmpSubCategories = {};
 
-    if ((await categories.count()) === 0) {
+    if ((await mainCategories.count()) === 0) {
       for await (const mainKey of Object.keys(Config.mainCategories)) {
         for (const subValue of Config.subCategories) {
           const categoryModel = {
@@ -50,14 +52,11 @@ class WebServer {
             updatedAt: Date.now(),
           };
 
-          tmpSubCategories[categoryModel.id] = categoryModel;
+          await subCategories.insertOne(categoryModel);
         }
       }
 
-      await categories.insertMany([
-        { mainCategories: Config.mainCategories },
-        { subCategories: tmpSubCategories },
-      ]);
+      await mainCategories.insertOne(Config.mainCategories);
     }
   }
 
