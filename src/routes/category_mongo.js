@@ -6,24 +6,49 @@ module.exports = {
     async handler(req, rep) {
       const { parent, id } = req.query;
 
-      const categoryCol = await MongoDB.getCollection("category");
+      const mainCategoryCol = await MongoDB.getCollection("mainCategory");
+      const subCategoryCol = await MongoDB.getCollection("subCategory");
 
-      const findResult = await categoryCol.find().toArray();
+      const mainFindResult = await mainCategoryCol.find().toArray();
+      const subFindResult = await subCategoryCol.find().toArray();
 
-      console.log(await categoryCol.find({ subcategory: {} }, {}).toArray());
+      const convertMainCategory = mainFindResult.reduce((newObj, obj) => {
+        newObj[obj.key] = obj.value;
+        return newObj;
+      }, {});
 
-      console.log("findResult", await findResult);
-      // const insert = await mainCategories.insertOne({ zzz: "zzzz" });
-      // const find = await mainCategories.find().toArray();
-      // console.log(find);
+      const convertSubCategory = subFindResult.reduce((newObj, obj) => {
+        newObj[obj.id] = obj
+        return newObj;
+      });
+
+      if (id !== undefined && parent === undefined) {
+        return {
+          status: 200,
+          data: convertSubCategory[id],
+        };
+      }
+
+      // TODO : 입력된 parent가 없으면 mainCategories를 return
+      if (parent === undefined && id === undefined) {
+        return {
+          status: 200,
+          data: convertMainCategory,
+        };
+      }
+
+      const getSubCategories = await subCategoryCol.find({ parent: parent }).toArray();
 
       return {
         status: 200,
-        data: [],
+        data: getSubCategories,
       };
     },
   },
+
+
   "POST /mongo_category": {
+    // middlewares: ["mongo_auth"],
     async handler(req, rep) {
       const { parent, name } = req.body;
 
@@ -60,6 +85,7 @@ module.exports = {
   },
 
   "DELETE /mongo_category": {
+    // middlewares: ["mongo_auth"],
     async handler(req, rep) {
       // TODO : 삭제할 category의 id를 입력 받음
       const { id: targetId } = req.body;

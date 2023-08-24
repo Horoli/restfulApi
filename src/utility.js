@@ -36,6 +36,8 @@ class Utility {
         return base64String;
     }
 
+    s
+
 
     static deleteImage(uuid) {
         const imagePath = `src/assets/images/${uuid}.base64`

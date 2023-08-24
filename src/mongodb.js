@@ -37,7 +37,7 @@ class MongoDB {
   getDatabase(name = this.$config.db) {
     return this.$mongoConnection.db(name);
   }
-  async getCollection(name) {
+  async innerGetCollection(name) {
     const getCollectionsList = await this.getDatabase()
       .listCollections()
       .toArray();
@@ -55,9 +55,11 @@ class MongoDB {
     if (!MongoDB.__instance) MongoDB.__instance = new MongoDB();
     return MongoDB.__instance;
   }
+
   static getCollection(name) {
-    return MongoDB.sharedInstance().getCollection(name);
+    return MongoDB.sharedInstance().innerGetCollection(name);
   }
+
   static objectId() {
     return new ObjectId();
   }

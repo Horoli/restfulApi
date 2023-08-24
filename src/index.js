@@ -35,9 +35,9 @@ class WebServer {
       db: dbName,
     });
 
-    const mainCategories = await mongoDB.getCollection("mainCategory");
-    const subCategories = await mongoDB.getCollection("subCategory");
-    const counterCol = await mongoDB.getCollection("counter");
+    const mainCategories = await mongoDB.innerGetCollection("mainCategory");
+    const subCategories = await mongoDB.innerGetCollection("subCategory");
+    const counterCol = await mongoDB.innerGetCollection("counter");
 
     if (
       (await mainCategories.count()) === 0 ||
