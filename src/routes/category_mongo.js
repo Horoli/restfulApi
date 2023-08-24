@@ -3,6 +3,7 @@ const Utility = require("../utility");
 
 module.exports = {
   "GET /mongo_category": {
+    middlewares: ["mongo_auth"],
     async handler(req, rep) {
       const { parent, id } = req.query;
 
@@ -18,14 +19,20 @@ module.exports = {
       }, {});
 
       const convertSubCategory = subFindResult.reduce((newObj, obj) => {
-        newObj[obj.id] = obj
+        newObj[obj.id] = obj;
         return newObj;
       });
 
+      // TODO : subCategory getById
       if (id !== undefined && parent === undefined) {
+        const getData = await subCategoryCol.findOne({ id: id });
+
+        console.log("id", id);
+        console.log("getData", getData);
+
         return {
           status: 200,
-          data: convertSubCategory[id],
+          data: getData,
         };
       }
 
@@ -37,7 +44,9 @@ module.exports = {
         };
       }
 
-      const getSubCategories = await subCategoryCol.find({ parent: parent }).toArray();
+      const getSubCategories = await subCategoryCol
+        .find({ parent: parent })
+        .toArray();
 
       return {
         status: 200,
@@ -45,7 +54,34 @@ module.exports = {
       };
     },
   },
+  // TODO : subCategoryCol에 있는 모든 데이터를 가져옴
+  "GET /mongo_subcategory": {
+    async handler(req, rep) {
+      const { map } = req.query;
+      console.log("map", map);
 
+      const subCategoryCol = await MongoDB.getCollection("subCategory");
+      const getData = await subCategoryCol.find().toArray();
+      if (map === undefined) {
+        // returnType = List;
+        return {
+          status: 200,
+          data: getData,
+        };
+      }
+
+      const convertSubCategory = getData.reduce((newObj, obj) => {
+        newObj[obj.id] = obj;
+        return newObj;
+      }, {});
+
+      // return type = Map;
+      return {
+        status: 200,
+        data: convertSubCategory,
+      };
+    },
+  },
 
   "POST /mongo_category": {
     // middlewares: ["mongo_auth"],

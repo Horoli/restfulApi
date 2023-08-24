@@ -6,7 +6,6 @@ module.exports = {
     // middlewares: ["mongo_auth"],
     async handler(req, rep) {
       const {
-
         question,
         answer,
         categoryId,
@@ -40,7 +39,7 @@ module.exports = {
           const base64Data = image.replace(/^data:image\/jpeg;base64,/, "");
           // TODO : imageCol에 image 저장
           await imageCol.insertOne({ id: uuid, image: base64Data });
-          console.log('insert image', image);
+          console.log("insert image", image);
           imageIds.push(uuid);
         }
       }
@@ -81,25 +80,24 @@ module.exports = {
       const createNewQuestion = {
         id: questionId,
         question: question,
-        answer: answer ?? '',
+        answer: answer ?? "",
         updatedAt: Date.now(),
         createdAt: Date.now(),
         // TODO : categoryId는 children이 없는 categoryId를 받아야함.
         // children이 있는 id를 받으면 error
         categoryId: categoryId,
         // TODO : difficultyCol 생성 후 클라이언트에서 선택한 difficulty를 입력할 수 있도록 해야함
-        difficulty: difficulty ?? '',
+        difficulty: difficulty ?? "",
         score: score ?? 0,
         // TODO : periodCol 생성해서 id를 입력받음
         period: [],
         // TODO : 이미지(base64String) 저장
         imageIds: imageIds,
-        info: info ?? '',
-        description: description ?? '',
-      }
+        info: info ?? "",
+        description: description ?? "",
+      };
 
       questionCol.insertOne(createNewQuestion);
-
 
       return {
         statusCode: 200,
@@ -117,15 +115,17 @@ module.exports = {
 
       const tmpData = [];
       for (const subCategoryId of subCategoryIds) {
-        const filteredDatas = await categoryCol.find({ categroyId: subCategoryId }).toArray();
+        const filteredDatas = await categoryCol
+          .find({ categroyId: subCategoryId })
+          .toArray();
 
         tmpData.push(...filteredDatas);
       }
 
       return {
-        data: tmpData
-      }
-    }
+        data: tmpData,
+      };
+    },
   },
 
   "GET /mongo_question": {
@@ -133,9 +133,9 @@ module.exports = {
       const questionCol = await MongoDB.getCollection("question");
       const questions = await questionCol.find().toArray();
       return {
-        data: questions
-      }
-    }
+        data: questions,
+      };
+    },
   },
 
   "GET /mongo_question/image/:id": {
@@ -146,14 +146,13 @@ module.exports = {
       const imageBuffer = Buffer.from(getImage.image, "base64");
       rep.header("Content-Type", "image/png");
       return imageBuffer;
-    }
+    },
   },
 
   "PATCH /mongo_question": {
     async handler(req, rep) {
       const { id, question, answer, categoryId, images, info, description } =
         req.body;
-
 
       if (question === "" || answer === "" || categoryId === "") {
         console.log("question", question === "");
@@ -166,10 +165,10 @@ module.exports = {
       const imageCol = await MongoDB.getCollection("image");
       const couterCol = await MongoDB.getCollection("counter");
       const subcategoryCol = await MongoDB.getCollection("subCategory");
-
       const getQuestion = await questionCol.findOne({ id: id });
       const imageIds = [];
 
+      console.log("mongoQuestion patch step1");
       // TODO : 기존에 저장된 이미지가 있고, 새로운 이미지가 없을 때
       if (images.length === 0 && getQuestion.imageIds.length !== 0) {
         for (const imageId of getQuestion.imageIds) {
@@ -177,9 +176,9 @@ module.exports = {
         }
       }
 
+      console.log("mongoQuestion patch step2");
       // TODO : 기존에 저장된 이미지가 있고, 이미지가 없을때
       if (images.length !== 0 && getQuestion.imageIds.length !== 0) {
-
         // 기존에 저장된 이미지 삭제
         for (const imageId of getQuestion.imageIds) {
           imageCol.deleteOne({ id: imageId });
@@ -192,11 +191,12 @@ module.exports = {
           const base64Data = image.replace(/^data:image\/jpeg;base64,/, "");
           // TODO : imageCol에 image 저장
           await imageCol.insertOne({ id: uuid, image: base64Data });
-          console.log('insert image', image);
+          console.log("insert image", image);
           imageIds.push(uuid);
         }
       }
 
+      console.log("mongoQuestion patch step3");
       // TODO : 기존에 저장된 이미지가 없고, 새로운 이미지가 있을 때
       if (images.length !== 0 && getQuestion.imageIds.length === 0) {
         for (const image of images) {
@@ -206,39 +206,109 @@ module.exports = {
           const base64Data = image.replace(/^data:image\/jpeg;base64,/, "");
           // TODO : imageCol에 image 저장
           await imageCol.insertOne({ id: uuid, image: base64Data });
-          console.log('insert image', image);
+          console.log("insert image", image);
           imageIds.push(uuid);
         }
       }
       // TODO : categoryId가 변경됐을때
-      if (getQuestion.categoryId !== categoryId) {
-        // TODO : 기존에 저장된 question의 categoryId의 parent를 찾아서 저장
+      // if (getQuestion.categoryId !== categoryId) {
+      //   // TODO : 기존에 저장된 question의 categoryId의 parent를 찾아서 저장
 
-        const getRootCategoryFromChildCategory = await subcategoryCol
-          .aggregate([
-            {
-              $graphLookup: {
-                from: "subCategory",
-                startWith: "$parent",
-                connectFromField: "parent",
-                connectToField: "id",
-                as: "ancestors",
-              },
-            },
-            {
-              $match: {
-                id: getQuestion.categoryId,
-                //   ancestors: { $size: 1 },
-              },
-            },
-          ])
-          .toArray();
+      //   const getRootCategoryFromChildCategory = await subcategoryCol
+      //     .aggregate([
+      //       {
+      //         $graphLookup: {
+      //           from: "subCategory",
+      //           startWith: "$parent",
+      //           connectFromField: "parent",
+      //           connectToField: "id",
+      //           as: "ancestors",
+      //         },
+      //       },
+      //       {
+      //         $match: {
+      //           id: getQuestion.categoryId,
+      //           //   ancestors: { $size: 1 },
+      //         },
+      //       },
+      //     ])
+      //     .toArray();
 
-      }
-    }
+      // getQuestion.question = question;
+      // getQuestion.answer = answer;
+      // getQuestion.categoryId = categoryId;
+      // getQuestion.updatedAt = Date.now();
+      // getQuestion.imageIds = imageIds;
+      // getQuestion.description = description;
+      // getQuestion.info = info;
+
+      await questionCol.updateOne(
+        { id: id },
+        {
+          $set: {
+            question: question,
+            answer: answer,
+            categoryId: categoryId,
+            updatedAt: Date.now(),
+            imageIds: imageIds,
+            description: description,
+            info: info,
+          },
+        }
+      );
+
+      return {
+        statusCode: 200,
+        message: "ok",
+        data: getQuestion,
+      };
+    },
   },
 
+  "GET /mongo_question/pagination/:selectedPage/:showCount": {
+    async handler(req, rep) {
+      const questionCol = await MongoDB.getCollection("question");
+      let selectedPage = parseInt(req.params.selectedPage);
+      let showCount = parseInt(req.params.showCount);
 
+      if (
+        isNaN(selectedPage) ||
+        selectedPage === 0 ||
+        isNaN(showCount) ||
+        showCount === 0
+      ) {
+        const error = new Error();
+        if (isNaN(selectedPage)) error.message = "page is NaN";
+        if (selectedPage === 0) error.message = "page is 0";
+        if (isNaN(showCount)) error.message = "showCount is NaN";
+        if (showCount === 0) error.message = "showCount is 0";
+        error.status = 400;
+        return error;
+      }
+
+      // skip 관련 후처리
+      const offset = (selectedPage - 1) * showCount;
+
+      const getPaginationData = await questionCol
+        .find()
+        .limit(showCount)
+        .skip(offset)
+        .toArray();
+
+      console.log("asd", getPaginationData.length);
+
+      const totalQuestionCount = await questionCol.count();
+      const maxPage = Math.ceil(totalQuestionCount / showCount);
+      const getQuestionCount = getPaginationData.length;
+
+      return {
+        maxPage: 1,
+        totalQuestionCount: totalQuestionCount,
+        getQuestionCount: getQuestionCount,
+        data: getPaginationData,
+      };
+    },
+  },
 
   "DELETE /mongo_question": {
     async handler(req, rep) {
@@ -254,9 +324,6 @@ module.exports = {
       // counter를 -1 해줌
 
       // TODO : 삭제할 때, 입력된 id를 가진 question을 삭제
-
-    }
-
-  }
-
+    },
+  },
 };
