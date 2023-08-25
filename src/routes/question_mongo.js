@@ -138,13 +138,24 @@ module.exports = {
     },
   },
 
-  "GET /mongo_question/image/:id": {
+  // "GET /mongo_question/image/:id": {
+  "GET /mongo_image/:id": {
     async handler(req, rep) {
       const { id } = req.query;
+      console.log('image id', id);
+
+      console.log("imageBuffer");
+
+
+
       const imageCol = await MongoDB.getCollection("image");
       const getImage = await imageCol.findOne({ id: id });
+
+      console.log('getImage', getImage);
       const imageBuffer = Buffer.from(getImage.image, "base64");
-      rep.header("Content-Type", "image/png");
+
+      // console.log("imageBuffer", imageBuffer);
+      // rep.header("Content-Type", "image/png");
       return imageBuffer;
     },
   },
@@ -163,7 +174,7 @@ module.exports = {
 
       const questionCol = await MongoDB.getCollection("question");
       const imageCol = await MongoDB.getCollection("image");
-      const couterCol = await MongoDB.getCollection("counter");
+      const counterCol = await MongoDB.getCollection("counter");
       const subcategoryCol = await MongoDB.getCollection("subCategory");
       const getQuestion = await questionCol.findOne({ id: id });
       const imageIds = [];
@@ -175,6 +186,7 @@ module.exports = {
           imageIds.push(imageId);
         }
       }
+
 
       console.log("mongoQuestion patch step2");
       // TODO : 기존에 저장된 이미지가 있고, 이미지가 없을때
@@ -210,38 +222,73 @@ module.exports = {
           imageIds.push(uuid);
         }
       }
+
+      console.log('getQuestion.categoryId', getQuestion.categoryId);
+      console.log(categoryId);
       // TODO : categoryId가 변경됐을때
-      // if (getQuestion.categoryId !== categoryId) {
-      //   // TODO : 기존에 저장된 question의 categoryId의 parent를 찾아서 저장
+      if (getQuestion.categoryId !== categoryId) {
+        //   // TODO : 기존에 저장된 question의 categoryId의 parent를 찾아서 저장
 
-      //   const getRootCategoryFromChildCategory = await subcategoryCol
-      //     .aggregate([
-      //       {
-      //         $graphLookup: {
-      //           from: "subCategory",
-      //           startWith: "$parent",
-      //           connectFromField: "parent",
-      //           connectToField: "id",
-      //           as: "ancestors",
-      //         },
-      //       },
-      //       {
-      //         $match: {
-      //           id: getQuestion.categoryId,
-      //           //   ancestors: { $size: 1 },
-      //         },
-      //       },
-      //     ])
-      //     .toArray();
+        const beforAncestorInfo = await subcategoryCol
+          .aggregate([
+            {
+              $graphLookup: {
+                from: "subCategory",
+                startWith: "$parent",
+                connectFromField: "parent",
+                connectToField: "id",
+                as: "ancestors",
+              },
+            },
+            {
+              $match: {
+                id: getQuestion.categoryId,
+                ancestors: { $size: 1 },
+              },
+            },
+          ])
+          .toArray();
 
-      // getQuestion.question = question;
-      // getQuestion.answer = answer;
-      // getQuestion.categoryId = categoryId;
-      // getQuestion.updatedAt = Date.now();
-      // getQuestion.imageIds = imageIds;
-      // getQuestion.description = description;
-      // getQuestion.info = info;
+        const afterAncestorInfo = await subcategoryCol
+          .aggregate([
+            {
+              $graphLookup: {
+                from: "subCategory",
+                startWith: "$parent",
+                connectFromField: "parent",
+                connectToField: "id",
+                as: "ancestors",
+              },
+            },
+            {
+              $match: {
+                id: categoryId,
+                ancestors: { $size: 1 },
+              },
+            },
+          ])
+          .toArray();
 
+        // 변경 전 
+        const beforeAncestorId = beforAncestorInfo[0].ancestors[0].parent;
+        // 변경 후 
+        const afterAncestorId = afterAncestorInfo[0].ancestors[0].parent;
+
+
+
+        // 변경 전 counterCol의 카테고리에 -1
+        await counterCol.findOneAndUpdate(
+          { key: beforeAncestorId },
+          { $inc: { counter: -1 } }
+        );
+
+        // 변경 후 counterCol의 카테고리에 +1
+        await counterCol.findOneAndUpdate(
+          { key: afterAncestorId },
+          { $inc: { counter: 1 } }
+        );
+
+      }
       await questionCol.updateOne(
         { id: id },
         {

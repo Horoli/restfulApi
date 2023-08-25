@@ -18,7 +18,7 @@ class WebServer {
     this.$middlewares = {};
 
     // this.$_initCSVToJSON();
-    this.$_initDatabase();
+    // this.$_initDatabase();
     this.$_initMiddlewares();
     this.$_initMongoDB();
     this.$_initRoutes();
@@ -34,6 +34,8 @@ class WebServer {
       port: 27017,
       db: dbName,
     });
+
+    console.log('aaaaaaaaa')
 
     const mainCategories = await mongoDB.innerGetCollection("mainCategory");
     const subCategories = await mongoDB.innerGetCollection("subCategory");
@@ -65,8 +67,6 @@ class WebServer {
           value: mainValue,
         });
       }
-
-      // await mainCategories.insertOne(Config.mainCategories);
     }
   }
 
@@ -148,7 +148,7 @@ class WebServer {
               }
             }
             //
-            done();
+            // done();
           },
         };
 

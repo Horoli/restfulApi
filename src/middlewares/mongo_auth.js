@@ -14,7 +14,7 @@ module.exports = async (req, rep) => {
 
     const tokenInfo = tokensCol.findOne({ token: token });
 
-    console.log("step 1");
+    console.log("mongo step 1");
     if (tokenInfo === undefined) {
         const error = new Error("Not permitted");
         error.status = 403;
