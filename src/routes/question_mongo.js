@@ -1,5 +1,6 @@
 const MongoDB = require("../mongodb");
 const Utility = require("../utility");
+const question = require("./question");
 
 module.exports = {
   "POST /mongo_question": {
@@ -114,13 +115,18 @@ module.exports = {
       const questionCol = await MongoDB.getCollection("question");
 
       const tmpData = [];
-      for (const subCategoryId of subCategoryIds) {
-        const filteredDatas = await categoryCol
-          .find({ categroyId: subCategoryId })
+
+      for await (const subCategoryId of subCategoryIds) {
+        // console.log("subCategoryId", subCategoryId);
+        const filteredDatas = await questionCol
+          .find({ categoryId: subCategoryId })
           .toArray();
+
+        // console.log("filteredDatas", filteredDatas);
 
         tmpData.push(...filteredDatas);
       }
+      console.log("tmpData", tmpData);
 
       return {
         data: tmpData,
@@ -138,20 +144,50 @@ module.exports = {
     },
   },
 
+  // TODO : 합계 값을 가져오는 쿼리 확인 후 수정
+  "GET /mongo_question/counter": {
+    async handler(req, rep) {
+      const questionCol = await MongoDB.getCollection("question");
+      const counterCol = await MongoDB.getCollection("counter");
+
+      const getCounter = await counterCol.find().toArray();
+
+      // TODO : counterCol 전체 데이터에 totalQuestionCount를 포함해서 return 해야함
+      return {
+        statusCode: 200,
+        data: { totalQuestionCount: 1, ko: 1 },
+      };
+    },
+  },
+
+  // TODO : /question/random/20을 쿼리하면 20개의 랜덤한 문제를 가져옴
+  "GET /mongo_question/random": {
+    async handler(req, rep) {},
+  },
+
+  // TODO : 클라이언트에서 저장하고 있는 guestId를 쿼리하면
+  // 해당 guest에 저장된 wishQuestion에 저장된 questionId를 활용하여
+  // questionCol에서 가져와서 리턴해 줌
+  "GET /mongo_qeustion/wish": {
+    async handler(req, rep) {},
+  },
+
+  "GET /question/wish/by_subject": {
+    async handler(req, rep) {},
+  },
+
   // "GET /mongo_question/image/:id": {
   "GET /mongo_image/:id": {
     async handler(req, rep) {
       const { id } = req.query;
-      console.log('image id', id);
+      console.log("image id", id);
 
       console.log("imageBuffer");
-
-
 
       const imageCol = await MongoDB.getCollection("image");
       const getImage = await imageCol.findOne({ id: id });
 
-      console.log('getImage', getImage);
+      console.log("getImage", getImage);
       const imageBuffer = Buffer.from(getImage.image, "base64");
 
       // console.log("imageBuffer", imageBuffer);
@@ -186,7 +222,6 @@ module.exports = {
           imageIds.push(imageId);
         }
       }
-
 
       console.log("mongoQuestion patch step2");
       // TODO : 기존에 저장된 이미지가 있고, 이미지가 없을때
@@ -223,7 +258,7 @@ module.exports = {
         }
       }
 
-      console.log('getQuestion.categoryId', getQuestion.categoryId);
+      console.log("getQuestion.categoryId", getQuestion.categoryId);
       console.log(categoryId);
       // TODO : categoryId가 변경됐을때
       if (getQuestion.categoryId !== categoryId) {
@@ -269,12 +304,10 @@ module.exports = {
           ])
           .toArray();
 
-        // 변경 전 
+        // 변경 전
         const beforeAncestorId = beforAncestorInfo[0].ancestors[0].parent;
-        // 변경 후 
+        // 변경 후
         const afterAncestorId = afterAncestorInfo[0].ancestors[0].parent;
-
-
 
         // 변경 전 counterCol의 카테고리에 -1
         await counterCol.findOneAndUpdate(
@@ -287,7 +320,6 @@ module.exports = {
           { key: afterAncestorId },
           { $inc: { counter: 1 } }
         );
-
       }
       await questionCol.updateOne(
         { id: id },
