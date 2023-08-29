@@ -164,46 +164,53 @@ module.exports = {
   },
 
   // TODO : /question/random/20을 쿼리하면 20개의 랜덤한 문제를 가져옴
-  "GET /mongo_question/random": {
+  "GET /mongo_question/random/:amount": {
     middlewares: ["mongo_auth"],
-    async handler(req, rep) { },
+    async handler(req, rep) {
+      const amount = await req.params.amount;
+      const questionCol = await MongoDB.getCollection("question");
+
+      const getRandomQuestions = await questionCol.aggregate([{
+        $sample: { size: parseInt(amount) }
+      }]).toArray();
+
+      return {
+        statusCode: 200,
+        totalQuestionCount: getRandomQuestions.length,
+        data: getRandomQuestions,
+      }
+    },
   },
 
   // TODO : 클라이언트에서 저장하고 있는 guestId를 쿼리하면
   // 해당 guest에 저장된 wishQuestion에 저장된 questionId를 활용하여
   // questionCol에서 가져와서 리턴해 줌
-  "GET /mongo_qeustion/wish": {
+  "GET /mongo_question/wish": {
     middlewares: ["mongo_auth"],
-
-    // const guestId = req.token.id;
-
-    // const guestCol = Database.sharedInstance().getCollection("guest");
-    // const questionCol = Database.sharedInstance().getCollection("question");
-    // const guestInfo = guestCol.get(guestId);
-
-    // const getQuestion = guestInfo.wishQuestion.map((e) => questionCol.get(e));
-
-    // console.log("convertQuestion", getQuestion.length);
-
-    // if (getQuestion.length === 0) {
-    //   const error = new Error("wishQuestion is empty");
-    //   error.status = 400;
-    //   return error;
-    // }
-
-    // return {
-    //   data: getQuestion,
-    // };
     async handler(req, rep) {
-      const guestId = req.token.id;
+      const token = await req.token;
+      const guestId = token.id
+
+
       const guestCol = await MongoDB.getCollection("guest");
-      const questionCol = await MongoDB.getCollection("question");
       const guestInfo = await guestCol.findOne({ id: guestId });
 
-      console.log(guestInfo);
+      const questionCol = await MongoDB.getCollection("question");
+      const tmpQuestions = [];
+      for await (const quiestionId of guestInfo.wishQuestion) {
+        const getQuestion = await questionCol.findOne({ id: quiestionId });
+        tmpQuestions.push(getQuestion);
+      }
+
+      if (tmpQuestions.length === 0) {
+        const error = new Error("wishQuestion is empty");
+        error.status = 400;
+        return error;
+      }
+
       return {
         statusCode: 200,
-        data: {},
+        data: tmpQuestions,
       }
 
     },
@@ -212,7 +219,61 @@ module.exports = {
 
   "GET /mongo_question/wish/by_subject": {
     middlewares: ["mongo_auth"],
-    async handler(req, rep) { },
+    async handler(req, rep) {
+      const token = await req.token;
+      const guestId = token.id
+
+      const guestCol = await MongoDB.getCollection("guest");
+      const questionCol = await MongoDB.getCollection("question");
+      const maincategoryCol = await MongoDB.getCollection("mainCategory");
+      const subcategoryCol = await MongoDB.getCollection("subCategory");
+
+      const categories = await maincategoryCol.find().toArray();
+      const guestInfo = await guestCol.findOne({ id: guestId });
+
+
+      const mapOfWish = {};
+      categories.forEach((e) => (mapOfWish[e.key] = []));
+
+      const getQuestions = [];
+      for await (const quiestionId of guestInfo.wishQuestion) {
+        const getQuestion = await questionCol.findOne({ id: quiestionId });
+        getQuestions.push(getQuestion);
+      }
+
+
+      for await (const question of getQuestions) {
+        const getRootCategoryFromChildCategory = await subcategoryCol
+          .aggregate([
+            {
+              $graphLookup: {
+                from: "subCategory",
+                startWith: "$parent",
+                connectFromField: "parent",
+                connectToField: "id",
+                as: "ancestors",
+              },
+            },
+            {
+              $match: {
+                id: question.categoryId,
+                ancestors: { $size: 1 },
+              },
+            },
+          ])
+          .toArray();
+
+        const ancestorId =
+          getRootCategoryFromChildCategory[0].ancestors[0].parent;
+
+        mapOfWish[ancestorId].push(question);
+      }
+
+      return {
+        statusCode: 200,
+        data: mapOfWish,
+      };
+    },
   },
 
   // "GET /mongo_question/image/:id": {

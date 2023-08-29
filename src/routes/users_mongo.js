@@ -24,7 +24,7 @@ module.exports = {
     },
 
     "POST /mongo_login": {
-        middlewares: ["mongo_auth"],
+        // middlewares: ["mongo_auth"],
         async handler(req, rep) {
             const { id, pw } = req.body;
             const usersCol = await MongoDB.getCollection("users");
