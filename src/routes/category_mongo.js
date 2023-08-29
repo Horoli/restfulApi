@@ -56,6 +56,7 @@ module.exports = {
   },
   // TODO : subCategoryCol에 있는 모든 데이터를 가져옴
   "GET /mongo_subcategory": {
+    middlewares: ["mongo_auth"],
     async handler(req, rep) {
       const { map } = req.query;
       console.log("map", map);
@@ -84,7 +85,7 @@ module.exports = {
   },
 
   "POST /mongo_category": {
-    // middlewares: ["mongo_auth"],
+    middlewares: ["mongo_auth"],
     async handler(req, rep) {
       const { parent, name } = req.body;
 
@@ -121,7 +122,7 @@ module.exports = {
   },
 
   "DELETE /mongo_category": {
-    // middlewares: ["mongo_auth"],
+    middlewares: ["mongo_auth"],
     async handler(req, rep) {
       // TODO : 삭제할 category의 id를 입력 받음
       const { id: targetId } = req.body;

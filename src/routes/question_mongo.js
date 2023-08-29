@@ -4,7 +4,7 @@ const question = require("./question");
 
 module.exports = {
   "POST /mongo_question": {
-    // middlewares: ["mongo_auth"],
+    middlewares: ["mongo_auth"],
     async handler(req, rep) {
       const {
         question,
@@ -107,6 +107,7 @@ module.exports = {
   },
 
   "POST /mongo_filtered_question": {
+    middlewares: ["mongo_auth"],
     async handler(req, rep) {
       const { subCategoryIds } = req.body;
       console.log("subCategoryIds", subCategoryIds);
@@ -135,6 +136,7 @@ module.exports = {
   },
 
   "GET /mongo_question": {
+    middlewares: ["mongo_auth"],
     async handler(req, rep) {
       const questionCol = await MongoDB.getCollection("question");
       const questions = await questionCol.find().toArray();
@@ -146,6 +148,7 @@ module.exports = {
 
   // TODO : 합계 값을 가져오는 쿼리 확인 후 수정
   "GET /mongo_question/counter": {
+    middlewares: ["mongo_auth"],
     async handler(req, rep) {
       const questionCol = await MongoDB.getCollection("question");
       const counterCol = await MongoDB.getCollection("counter");
@@ -162,22 +165,59 @@ module.exports = {
 
   // TODO : /question/random/20을 쿼리하면 20개의 랜덤한 문제를 가져옴
   "GET /mongo_question/random": {
-    async handler(req, rep) {},
+    middlewares: ["mongo_auth"],
+    async handler(req, rep) { },
   },
 
   // TODO : 클라이언트에서 저장하고 있는 guestId를 쿼리하면
   // 해당 guest에 저장된 wishQuestion에 저장된 questionId를 활용하여
   // questionCol에서 가져와서 리턴해 줌
   "GET /mongo_qeustion/wish": {
-    async handler(req, rep) {},
+    middlewares: ["mongo_auth"],
+
+    // const guestId = req.token.id;
+
+    // const guestCol = Database.sharedInstance().getCollection("guest");
+    // const questionCol = Database.sharedInstance().getCollection("question");
+    // const guestInfo = guestCol.get(guestId);
+
+    // const getQuestion = guestInfo.wishQuestion.map((e) => questionCol.get(e));
+
+    // console.log("convertQuestion", getQuestion.length);
+
+    // if (getQuestion.length === 0) {
+    //   const error = new Error("wishQuestion is empty");
+    //   error.status = 400;
+    //   return error;
+    // }
+
+    // return {
+    //   data: getQuestion,
+    // };
+    async handler(req, rep) {
+      const guestId = req.token.id;
+      const guestCol = await MongoDB.getCollection("guest");
+      const questionCol = await MongoDB.getCollection("question");
+      const guestInfo = await guestCol.findOne({ id: guestId });
+
+      console.log(guestInfo);
+      return {
+        statusCode: 200,
+        data: {},
+      }
+
+    },
+
   },
 
-  "GET /question/wish/by_subject": {
-    async handler(req, rep) {},
+  "GET /mongo_question/wish/by_subject": {
+    middlewares: ["mongo_auth"],
+    async handler(req, rep) { },
   },
 
   // "GET /mongo_question/image/:id": {
   "GET /mongo_image/:id": {
+    middlewares: ["mongo_auth"],
     async handler(req, rep) {
       const { id } = req.query;
       console.log("image id", id);
@@ -197,6 +237,7 @@ module.exports = {
   },
 
   "PATCH /mongo_question": {
+    middlewares: ["mongo_auth"],
     async handler(req, rep) {
       const { id, question, answer, categoryId, images, info, description } =
         req.body;
@@ -345,6 +386,7 @@ module.exports = {
   },
 
   "GET /mongo_question/pagination/:selectedPage/:showCount": {
+    middlewares: ["mongo_auth"],
     async handler(req, rep) {
       const questionCol = await MongoDB.getCollection("question");
       let selectedPage = parseInt(req.params.selectedPage);
@@ -390,6 +432,7 @@ module.exports = {
   },
 
   "DELETE /mongo_question": {
+    middlewares: ["mongo_auth"],
     async handler(req, rep) {
       const { id } = req.body;
       if (id === undefined) {

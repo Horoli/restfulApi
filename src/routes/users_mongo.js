@@ -3,6 +3,7 @@ const Utility = require("../utility");
 
 module.exports = {
     "POST /mongo_sign_up": {
+        middlewares: ["mongo_auth"],
         async handler(req, rep) {
             const { id, pw } = req.body;
 
@@ -23,6 +24,7 @@ module.exports = {
     },
 
     "POST /mongo_login": {
+        middlewares: ["mongo_auth"],
         async handler(req, rep) {
             const { id, pw } = req.body;
             const usersCol = await MongoDB.getCollection("users");

@@ -1,9 +1,11 @@
 
 const MongoDB = require("../mongodb");
 const Utility = require("../utility");
+const guest = require("./guest");
 
 module.exports = {
     "POST /mongo_guest": {
+        // middlewares: ["mongo_auth"],
         async handler(req, rep) {
             const id = req.body.id.replace(/-/g, "");
 
@@ -40,6 +42,7 @@ module.exports = {
         }
     },
     "POST /mongo_guestlogin": {
+        // middlewares: ["mongo_auth"],
         async handler(req, rep) {
             const id = req.body.id.replace(/-/g, "");
 
@@ -86,17 +89,25 @@ module.exports = {
     },
 
     "PATCH /mongo_guest": {
+        middlewares: ["mongo_auth"],
         async handler(req, rep) {
             const { id, wishQuestion } = req.body;
 
-            const guestCol = await MongoDB.getCollection("guest");
+            if (id === undefined) {
+                const error = new Error("mongo_guest id is undefined");
+                error.status = 400;
+                return error;
+            }
 
-            const guestInfo = await guestCol.findOneAndUpdate({ id: id },
-                { $pull: { wishQuestion: wishQuestion } }
-            );
+            const guestCol = await MongoDB.getCollection("guest");
+            await guestCol.updateOne({ id: id }, { $set: { wishQuestion: wishQuestion } });
+
+            const guestInfo = await guestCol.findOne({ id: id });
+            console.log(guestInfo);
 
             return {
                 statusCode: 200,
+                data: guestInfo,
             }
         }
 
