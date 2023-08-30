@@ -71,43 +71,43 @@ class WebServer {
   }
 
   // TODO : 서버 실행 시 mainCategory의 초기값을 생성
-  $_initDatabase() {
-    // Category Initialize
-    const counterCol = Database.sharedInstance().getCollection("counter");
-    const categoryCol = Database.sharedInstance().getCollection("category");
+  // $_initDatabase() {
+  //   // Category Initialize
+  //   const counterCol = Database.sharedInstance().getCollection("counter");
+  //   const categoryCol = Database.sharedInstance().getCollection("category");
 
-    // console.log('counterCol.get()', counterCol.get('ko'));
+  //   // console.log('counterCol.get()', counterCol.get('ko'));
 
-    // counterCol이 없으면 생성하고 모든 카테고리를 생성하고 0을 set
-    if (counterCol.get("ko") === undefined) {
-      Object.keys(Config.mainCategories).forEach((item) => {
-        counterCol.set(item, 0);
-      });
-    }
+  //   // counterCol이 없으면 생성하고 모든 카테고리를 생성하고 0을 set
+  //   if (counterCol.get("ko") === undefined) {
+  //     Object.keys(Config.mainCategories).forEach((item) => {
+  //       counterCol.set(item, 0);
+  //     });
+  //   }
 
-    categoryCol.set("mainCategories", Config.mainCategories);
+  //   categoryCol.set("mainCategories", Config.mainCategories);
 
-    // TODO : subCategories가 없으면 생성
-    // mainCategories에 Config.subCategories를 추가하는 기능
-    if (categoryCol.get("subCategories") === undefined) {
-      for (const [mainKey, value] of Object.entries(Config.mainCategories)) {
-        console.log("key", mainKey);
+  //   // TODO : subCategories가 없으면 생성
+  //   // mainCategories에 Config.subCategories를 추가하는 기능
+  //   if (categoryCol.get("subCategories") === undefined) {
+  //     for (const [mainKey, value] of Object.entries(Config.mainCategories)) {
+  //       console.log("key", mainKey);
 
-        for (const subValue of Config.subCategories) {
-          const categoryModel = {
-            id: Utility.UUID(true),
-            parent: mainKey,
-            children: [],
-            name: subValue,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
-          };
+  //       for (const subValue of Config.subCategories) {
+  //         const categoryModel = {
+  //           id: Utility.UUID(true),
+  //           parent: mainKey,
+  //           children: [],
+  //           name: subValue,
+  //           createdAt: Date.now(),
+  //           updatedAt: Date.now(),
+  //         };
 
-          categoryCol.set(`subCategories.${categoryModel.id}`, categoryModel);
-        }
-      }
-    }
-  }
+  //         categoryCol.set(`subCategories.${categoryModel.id}`, categoryModel);
+  //       }
+  //     }
+  //   }
+  // }
 
   $_initMiddlewares() {
     const middlewaresPath = Path.join(__dirname, "./middlewares");

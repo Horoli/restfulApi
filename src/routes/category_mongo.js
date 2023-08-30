@@ -18,10 +18,10 @@ module.exports = {
         return newObj;
       }, {});
 
-      const convertSubCategory = subFindResult.reduce((newObj, obj) => {
-        newObj[obj.id] = obj;
-        return newObj;
-      });
+      // const convertSubCategory = subFindResult.reduce((newObj, obj) => {
+      //   newObj[obj.id] = obj;
+      //   return newObj;
+      // });
 
       // TODO : subCategory getById
       if (id !== undefined && parent === undefined) {
