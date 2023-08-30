@@ -155,22 +155,19 @@ module.exports = {
 
       const getCounter = await counterCol.find().toArray();
 
+      // TODO : counterCol에 저장된 counter의 합계 값을 저장하는 변수
       let totalQuestionCount = 0;
 
+      // TODO : return value type을 map으로 전달,
       let counterMap = getCounter.reduce((newObj, obj) => {
         newObj[obj.key] = obj.counter;
-        totalQuestionCount += obj.counter;
+        totalQuestionCount += obj.counter; // counterCol에 저장된 counter의 합계 값을 저장 
         return newObj;
       }, {});
 
+
       counterMap["totalQuestionCount"] = totalQuestionCount;
 
-
-      console.log('counterMap', counterMap);
-
-
-
-      // TODO : counterCol 전체 데이터에 totalQuestionCount를 포함해서 return 해야함
       return {
         statusCode: 200,
         data: counterMap,
