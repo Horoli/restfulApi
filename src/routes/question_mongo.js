@@ -102,6 +102,7 @@ module.exports = {
 
       return {
         statusCode: 200,
+        data: createNewQuestion,
       };
     },
   },
