@@ -26,11 +26,11 @@ class WebServer {
 
   // TODO : DEV CODE, mongoDB test
   async $_initMongoDB() {
-    const dbName = "test_db";
+    const dbName = "imyong";
     const mongoDB = await MongoDB.sharedInstance();
 
     await mongoDB.connect({
-      host: "172.16.0.6",
+      host: "172.16.0.7",
       port: 27017,
       db: dbName,
     });
