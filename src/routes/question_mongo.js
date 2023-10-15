@@ -337,7 +337,7 @@ module.exports = {
       }
 
       console.log("mongoQuestion patch step2");
-      // TODO : 기존에 저장된 이미지가 있고, 이미지가 없을때
+      // TODO : 기존에 저장된 이미지가 있고, 새로운 이미지가 있을 때
       if (images.length !== 0 && getQuestion.imageIds.length !== 0) {
         // 기존에 저장된 이미지 삭제
         for (const imageId of getQuestion.imageIds) {
