@@ -162,10 +162,9 @@ module.exports = {
       // TODO : return value type을 map으로 전달,
       let counterMap = getCounter.reduce((newObj, obj) => {
         newObj[obj.key] = obj.counter;
-        totalQuestionCount += obj.counter; // counterCol에 저장된 counter의 합계 값을 저장 
+        totalQuestionCount += obj.counter; // counterCol에 저장된 counter의 합계 값을 저장
         return newObj;
       }, {});
-
 
       counterMap["totalQuestionCount"] = totalQuestionCount;
 
@@ -183,15 +182,19 @@ module.exports = {
       const amount = await req.params.amount;
       const questionCol = await MongoDB.getCollection("question");
 
-      const getRandomQuestions = await questionCol.aggregate([{
-        $sample: { size: parseInt(amount) }
-      }]).toArray();
+      const getRandomQuestions = await questionCol
+        .aggregate([
+          {
+            $sample: { size: parseInt(amount) },
+          },
+        ])
+        .toArray();
 
       return {
         statusCode: 200,
         totalQuestionCount: getRandomQuestions.length,
         data: getRandomQuestions,
-      }
+      };
     },
   },
 
@@ -202,8 +205,7 @@ module.exports = {
     middlewares: ["mongo_auth"],
     async handler(req, rep) {
       const token = await req.token;
-      const guestId = token.id
-
+      const guestId = token.id;
 
       const guestCol = await MongoDB.getCollection("guest");
       const guestInfo = await guestCol.findOne({ id: guestId });
@@ -224,17 +226,15 @@ module.exports = {
       return {
         statusCode: 200,
         data: tmpQuestions,
-      }
-
+      };
     },
-
   },
 
   "GET /mongo_question/wish/by_subject": {
     middlewares: ["mongo_auth"],
     async handler(req, rep) {
       const token = await req.token;
-      const guestId = token.id
+      const guestId = token.id;
 
       const guestCol = await MongoDB.getCollection("guest");
       const questionCol = await MongoDB.getCollection("question");
@@ -244,7 +244,6 @@ module.exports = {
       const categories = await maincategoryCol.find().toArray();
       const guestInfo = await guestCol.findOne({ id: guestId });
 
-
       const mapOfWish = {};
       categories.forEach((e) => (mapOfWish[e.key] = []));
 
@@ -253,7 +252,6 @@ module.exports = {
         const getQuestion = await questionCol.findOne({ id: quiestionId });
         getQuestions.push(getQuestion);
       }
-
 
       for await (const question of getQuestions) {
         const getRootCategoryFromChildCategory = await subcategoryCol
@@ -339,7 +337,7 @@ module.exports = {
       }
 
       console.log("mongoQuestion patch step2");
-      // TODO : 기존에 저장된 이미지가 있고, 이미지가 없을때
+      // TODO : 기존에 저장된 이미지가 있고, 새로운 이미지가 있을 때
       if (images.length !== 0 && getQuestion.imageIds.length !== 0) {
         // 기존에 저장된 이미지 삭제
         for (const imageId of getQuestion.imageIds) {
