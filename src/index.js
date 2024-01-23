@@ -124,6 +124,49 @@ class WebServer {
     const routesPath = Path.join(__dirname, "./routes");
     const routeFiles = Fs.readdirSync(routesPath);
 
+    // for (const filename of routeFiles) {
+    //   const filePath = Path.join(routesPath, filename);
+    //   const isDirectory = Fs.lstatSync(filePath).isDirectory();
+
+    //   if (isDirectory) {
+    //     const subRouteFiles = Fs.readdirSync(filePath);
+
+    //     for (const subFilename of subRouteFiles) {
+    //         const routePath = Path.join(filePath, subFilename);
+    //         const routes = require(routePath);
+
+    //       for (const routeEndpoint of Object.keys(routes)) {
+    //         const routeDef = routes[routeEndpoint];
+    //         const [method, path] = routeEndpoint.split(" ");
+
+    //         const options = {
+    //           preHandler: async (req, rep, done) => {
+    //             const middlewares = routeDef.middlewares ?? [];
+
+    //             for (const middlewareName of middlewares) {
+    //               if (middlewareName in this.$middlewares) {
+    //                 const middleware = this.$middlewares[middlewareName];
+    //                 if (middleware) {
+    //                   const middlewareResult = await middleware(req, rep);
+    //                   if (middlewareResult instanceof Error) {
+    //                     return done(middlewareResult);
+    //                   }
+    //                 }
+    //               }
+    //             }
+    //           }
+    //         }
+
+    //         const version = filePath.substring(filePath.length - 2, filePath.length);
+    //         const fileRoutePath = subFilename.slice(0, -3);
+    //         const endpoint = `/${version}/${fileRoutePath}${path}`;
+
+    //         this.$webServer[method.toLowerCase()](endpoint, options, routeDef.handler);
+    //       }
+    //     }
+    //   }
+    // }
+
     for (const filename of routeFiles) {
       const routePath = Path.join(routesPath, filename);
       const routes = require(routePath);
