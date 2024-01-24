@@ -122,11 +122,14 @@ class WebServer {
 
   $_initRoutes() {
     const routesPath = Path.join(__dirname, "./routes");
+
     const routeFiles = Fs.readdirSync(routesPath);
 
     // for (const filename of routeFiles) {
     //   const filePath = Path.join(routesPath, filename);
     //   const isDirectory = Fs.lstatSync(filePath).isDirectory();
+
+    //   console.log(filePath)
 
     //   if (isDirectory) {
     //     const subRouteFiles = Fs.readdirSync(filePath);
@@ -160,6 +163,9 @@ class WebServer {
     //         const version = filePath.substring(filePath.length - 2, filePath.length);
     //         const fileRoutePath = subFilename.slice(0, -3);
     //         const endpoint = `/${version}/${fileRoutePath}${path}`;
+    //         console.log('endpoint', endpoint)
+
+
 
     //         this.$webServer[method.toLowerCase()](endpoint, options, routeDef.handler);
     //       }
@@ -200,6 +206,85 @@ class WebServer {
       }
     }
   }
+
+
+
+  /**
+  * 입력받은 filePath의 파일들을 가져와서 파일인지 directory인지 확인 후
+  * directory이면 directory내부로 접근하여 파일을 가져오고,
+  * 파일이면 endpoint를 가져오는 재귀함수
+  */
+
+  // $_initRoutes() {
+  //   const routesPath = Path.join(__dirname, "./routes");
+  //   this._loadRoutes(routesPath);
+  // }
+
+  // _loadRoutes(filePath) {
+
+  //   // 해당 path의 파일이 directory인지 확인
+  //   const isDirectory = Fs.lstatSync(filePath).isDirectory();
+
+  //   if (isDirectory) {
+  //     // directory이면 해당 directory의 파일들을 가져옴
+  //     const subFiles = Fs.readdirSync(filePath);
+
+  //     for (const filename of subFiles) {
+
+  //       const subFilePath = Path.join(filePath, filename);
+
+  //       // 함수 본인을 재실행함
+  //       this._loadRoutes(subFilePath);
+  //     }
+  //   } else {
+  //     // 폴더가 아니면 endpoint를 가져오는 로직
+  //     const routes = require(filePath);
+  //     for (const routeEndpoint of Object.keys(routes)) {
+  //       const routeDef = routes[routeEndpoint];
+  //       const [method, path] = routeEndpoint.split(" ");
+
+  //       const options = {
+  //         preHandler: async (req, rep, done) => {
+  //           const middlewares = routeDef.middlewares ?? [];
+
+  //           for (const middlewareName of middlewares) {
+  //             if (middlewareName in this.$middlewares) {
+  //               const middleware = this.$middlewares[middlewareName];
+  //               if (middleware) {
+  //                 const middlewareResult = await middleware(req, rep);
+  //                 if (middlewareResult instanceof Error) {
+  //                   return done(middlewareResult);
+  //                 }
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+
+  //       const routesIndex = filePath.indexOf('routes\\');
+  //       const getPath = filePath.substring(routesIndex + 7);
+
+  //       const versionCheck = getPath.indexOf('\\');
+
+  //       if (versionCheck === -1) {
+  //         const fileRoutePath = getPath.slice(0, -3);
+  //         const endpoint = `/${fileRoutePath}${path}`;
+  //         this.$webServer[method.toLowerCase()](endpoint, options, routeDef.handler);
+  //       }
+
+  //       if (versionCheck !== -1) {
+  //         const fileRoutePath = getPath.slice(0, -3);
+
+  //         const splitFileRoutePath = fileRoutePath.split('\\');
+
+  //         const endpoint = '/' + splitFileRoutePath.join('/');
+
+  //         this.$webServer[method.toLowerCase()](endpoint, options, routeDef.handler);
+  //       }
+  //     }
+  //   }
+  // }
+
 
   start() {
     // TODO : cors header setting

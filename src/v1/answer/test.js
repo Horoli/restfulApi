@@ -1,4 +1,5 @@
-const Database = require("../../datebase");
+
+const Database = require("../../../datebase");
 
 module.exports = {
     "POST /type": {
