@@ -28,7 +28,17 @@ module.exports = {
             }
         }
     },
-    "GET /": {
+
+    "GET /bbbb": {
+        middlewares: [],
+        async handler(req, rep) {
+            return {
+                statusCode: 200,
+                data:'',
+            }
+        }
+    },
+    "GET /aaaa": {
         middlewares: [],
         async handler(req, rep) {
             return {

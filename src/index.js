@@ -120,92 +120,92 @@ class WebServer {
     }
   }
 
-  $_initRoutes() {
-    const routesPath = Path.join(__dirname, "./routes");
+  // $_initRoutes() {
+  //   const routesPath = Path.join(__dirname, "./routes");
 
-    const routeFiles = Fs.readdirSync(routesPath);
+  //   const routeFiles = Fs.readdirSync(routesPath);
 
-    // for (const filename of routeFiles) {
-    //   const filePath = Path.join(routesPath, filename);
-    //   const isDirectory = Fs.lstatSync(filePath).isDirectory();
+  //   // for (const filename of routeFiles) {
+  //   //   const filePath = Path.join(routesPath, filename);
+  //   //   const isDirectory = Fs.lstatSync(filePath).isDirectory();
 
-    //   console.log(filePath)
+  //   //   console.log(filePath)
 
-    //   if (isDirectory) {
-    //     const subRouteFiles = Fs.readdirSync(filePath);
+  //   //   if (isDirectory) {
+  //   //     const subRouteFiles = Fs.readdirSync(filePath);
 
-    //     for (const subFilename of subRouteFiles) {
-    //         const routePath = Path.join(filePath, subFilename);
-    //         const routes = require(routePath);
+  //   //     for (const subFilename of subRouteFiles) {
+  //   //         const routePath = Path.join(filePath, subFilename);
+  //   //         const routes = require(routePath);
 
-    //       for (const routeEndpoint of Object.keys(routes)) {
-    //         const routeDef = routes[routeEndpoint];
-    //         const [method, path] = routeEndpoint.split(" ");
+  //   //       for (const routeEndpoint of Object.keys(routes)) {
+  //   //         const routeDef = routes[routeEndpoint];
+  //   //         const [method, path] = routeEndpoint.split(" ");
 
-    //         const options = {
-    //           preHandler: async (req, rep, done) => {
-    //             const middlewares = routeDef.middlewares ?? [];
+  //   //         const options = {
+  //   //           preHandler: async (req, rep, done) => {
+  //   //             const middlewares = routeDef.middlewares ?? [];
 
-    //             for (const middlewareName of middlewares) {
-    //               if (middlewareName in this.$middlewares) {
-    //                 const middleware = this.$middlewares[middlewareName];
-    //                 if (middleware) {
-    //                   const middlewareResult = await middleware(req, rep);
-    //                   if (middlewareResult instanceof Error) {
-    //                     return done(middlewareResult);
-    //                   }
-    //                 }
-    //               }
-    //             }
-    //           }
-    //         }
+  //   //             for (const middlewareName of middlewares) {
+  //   //               if (middlewareName in this.$middlewares) {
+  //   //                 const middleware = this.$middlewares[middlewareName];
+  //   //                 if (middleware) {
+  //   //                   const middlewareResult = await middleware(req, rep);
+  //   //                   if (middlewareResult instanceof Error) {
+  //   //                     return done(middlewareResult);
+  //   //                   }
+  //   //                 }
+  //   //               }
+  //   //             }
+  //   //           }
+  //   //         }
 
-    //         const version = filePath.substring(filePath.length - 2, filePath.length);
-    //         const fileRoutePath = subFilename.slice(0, -3);
-    //         const endpoint = `/${version}/${fileRoutePath}${path}`;
-    //         console.log('endpoint', endpoint)
+  //   //         const version = filePath.substring(filePath.length - 2, filePath.length);
+  //   //         const fileRoutePath = subFilename.slice(0, -3);
+  //   //         const endpoint = `/${version}/${fileRoutePath}${path}`;
+  //   //         console.log('endpoint', endpoint)
 
 
 
-    //         this.$webServer[method.toLowerCase()](endpoint, options, routeDef.handler);
-    //       }
-    //     }
-    //   }
-    // }
+  //   //         this.$webServer[method.toLowerCase()](endpoint, options, routeDef.handler);
+  //   //       }
+  //   //     }
+  //   //   }
+  //   // }
 
-    for (const filename of routeFiles) {
-      const routePath = Path.join(routesPath, filename);
-      const routes = require(routePath);
+  //   for (const filename of routeFiles) {
+  //     const routePath = Path.join(routesPath, filename);
+  //     const routes = require(routePath);
 
-      for (const routeEndpoint of Object.keys(routes)) {
-        const routeDef = routes[routeEndpoint];
-        const [method, path] = routeEndpoint.split(" ");
+  //     for (const routeEndpoint of Object.keys(routes)) {
+  //       const routeDef = routes[routeEndpoint];
+  //       const [method, path] = routeEndpoint.split(" ");
 
-        // TODO : preHandler 추가
-        const options = {
-          preHandler: async (req, rep, done) => {
-            const middlewares = routeDef.middlewares ?? [];
+  //       // TODO : preHandler 추가
+  //       const options = {
+  //         preHandler: async (req, rep, done) => {
+  //           const middlewares = routeDef.middlewares ?? [];
 
-            for (const middlewareName of middlewares) {
-              if (middlewareName in this.$middlewares) {
-                const middleware = this.$middlewares[middlewareName];
+  //           for (const middlewareName of middlewares) {
+  //             if (middlewareName in this.$middlewares) {
+  //               const middleware = this.$middlewares[middlewareName];
 
-                const middlewareResult = await middleware(req, rep);
-                if (middlewareResult instanceof Error) {
-                  return done(middlewareResult);
-                }
-              }
-            }
-            //
-            // done();
-          },
-        };
+  //               const middlewareResult = await middleware(req, rep);
+  //               if (middlewareResult instanceof Error) {
+  //                 return done(middlewareResult);
+  //               }
+  //             }
+  //           }
+  //           //
+  //           // done();
+  //         },
+  //       };
 
-        // TODO : preHandler가 포함된 options 추가
-        this.$webServer[method.toLowerCase()](path, options, routeDef.handler);
-      }
-    }
-  }
+  //       // TODO : preHandler가 포함된 options 추가
+  //       this.$webServer[method.toLowerCase()](path, options, routeDef.handler);
+  //     }
+  //   }
+  // }
 
 
 
@@ -215,75 +215,75 @@ class WebServer {
   * 파일이면 endpoint를 가져오는 재귀함수
   */
 
-  // $_initRoutes() {
-  //   const routesPath = Path.join(__dirname, "./routes");
-  //   this._loadRoutes(routesPath);
-  // }
+  $_initRoutes() {
+    const routesPath = Path.join(__dirname, "./routes");
+    this._loadRoutes(routesPath);
+  }
 
-  // _loadRoutes(filePath) {
+  _loadRoutes(filePath) {
 
-  //   // 해당 path의 파일이 directory인지 확인
-  //   const isDirectory = Fs.lstatSync(filePath).isDirectory();
+    // 해당 path의 파일이 directory인지 확인
+    const isDirectory = Fs.lstatSync(filePath).isDirectory();
 
-  //   if (isDirectory) {
-  //     // directory이면 해당 directory의 파일들을 가져옴
-  //     const subFiles = Fs.readdirSync(filePath);
+    if (isDirectory) {
+      // directory이면 해당 directory의 파일들을 가져옴
+      const subFiles = Fs.readdirSync(filePath);
 
-  //     for (const filename of subFiles) {
+      for (const filename of subFiles) {
 
-  //       const subFilePath = Path.join(filePath, filename);
+        const subFilePath = Path.join(filePath, filename);
 
-  //       // 함수 본인을 재실행함
-  //       this._loadRoutes(subFilePath);
-  //     }
-  //   } else {
-  //     // 폴더가 아니면 endpoint를 가져오는 로직
-  //     const routes = require(filePath);
-  //     for (const routeEndpoint of Object.keys(routes)) {
-  //       const routeDef = routes[routeEndpoint];
-  //       const [method, path] = routeEndpoint.split(" ");
+        // 함수 본인을 재실행함
+        this._loadRoutes(subFilePath);
+      }
+    } else {
+      // 폴더가 아니면 endpoint를 가져오는 로직
+      const routes = require(filePath);
+      for (const routeEndpoint of Object.keys(routes)) {
+        const routeDef = routes[routeEndpoint];
+        const [method, path] = routeEndpoint.split(" ");
 
-  //       const options = {
-  //         preHandler: async (req, rep, done) => {
-  //           const middlewares = routeDef.middlewares ?? [];
+        const options = {
+          preHandler: async (req, rep, done) => {
+            const middlewares = routeDef.middlewares ?? [];
 
-  //           for (const middlewareName of middlewares) {
-  //             if (middlewareName in this.$middlewares) {
-  //               const middleware = this.$middlewares[middlewareName];
-  //               if (middleware) {
-  //                 const middlewareResult = await middleware(req, rep);
-  //                 if (middlewareResult instanceof Error) {
-  //                   return done(middlewareResult);
-  //                 }
-  //               }
-  //             }
-  //           }
-  //         }
-  //       }
+            for (const middlewareName of middlewares) {
+              if (middlewareName in this.$middlewares) {
+                const middleware = this.$middlewares[middlewareName];
+                if (middleware) {
+                  const middlewareResult = await middleware(req, rep);
+                  if (middlewareResult instanceof Error) {
+                    return done(middlewareResult);
+                  }
+                }
+              }
+            }
+          }
+        }
 
-  //       const routesIndex = filePath.indexOf('routes\\');
-  //       const getPath = filePath.substring(routesIndex + 7);
+        const routesIndex = filePath.indexOf('routes\\');
+        const getPath = filePath.substring(routesIndex + 7);
 
-  //       const versionCheck = getPath.indexOf('\\');
+        const versionCheck = getPath.indexOf('\\');
 
-  //       if (versionCheck === -1) {
-  //         const fileRoutePath = getPath.slice(0, -3);
-  //         const endpoint = `/${fileRoutePath}${path}`;
-  //         this.$webServer[method.toLowerCase()](endpoint, options, routeDef.handler);
-  //       }
+        if (versionCheck === -1) {
+          const fileRoutePath = getPath.slice(0, -3);
+          const endpoint = `/${fileRoutePath}${path}`;
+          this.$webServer[method.toLowerCase()](endpoint, options, routeDef.handler);
+        }
 
-  //       if (versionCheck !== -1) {
-  //         const fileRoutePath = getPath.slice(0, -3);
+        if (versionCheck !== -1) {
+          const fileRoutePath = getPath.slice(0, -3);
 
-  //         const splitFileRoutePath = fileRoutePath.split('\\');
+          const splitFileRoutePath = fileRoutePath.split('\\');
 
-  //         const endpoint = '/' + splitFileRoutePath.join('/');
+          const endpoint = '/' + splitFileRoutePath.join('/') + path;
 
-  //         this.$webServer[method.toLowerCase()](endpoint, options, routeDef.handler);
-  //       }
-  //     }
-  //   }
-  // }
+          this.$webServer[method.toLowerCase()](endpoint, options, routeDef.handler);
+        }
+      }
+    }
+  }
 
 
   start() {
